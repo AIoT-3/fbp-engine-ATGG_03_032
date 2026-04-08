@@ -1,17 +1,15 @@
 package com.fbp.engine;
 
 import com.fbp.engine.core.connection.Connection;
-import com.fbp.engine.message.Message;
-import com.fbp.engine.node.Node;
 import com.fbp.engine.node.impl.FilterNode;
 import com.fbp.engine.node.impl.GeneratorNode;
 import com.fbp.engine.node.impl.PrintNode;
 
-import java.util.Map;
 import java.util.random.RandomGenerator;
 
-public class Main {
+public class Main_3_7810 {
     public static void main(String[] args) {
+        //3-7
         System.out.println("-".repeat(30) + " gen -> single-connection " + "-".repeat(30));
         GeneratorNode gen = new GeneratorNode("gen-1");
 
@@ -28,6 +26,7 @@ public class Main {
 
         System.out.println();
 
+        //3-8
         System.out.println("-".repeat(30) + " gen -> Multi-connection " + "-".repeat(30));
         Connection connection1 = new Connection("conn-2");
         gen.getOutputPort().connect(connection1);
@@ -42,6 +41,7 @@ public class Main {
 
         System.out.println();
 
+        //3-10xx
         System.out.println("-".repeat(10) + " gen -> single-connection -> filter -> multi-connection -> printer " + "-".repeat(19));
         GeneratorNode generatorNode = new GeneratorNode("generator");
 
