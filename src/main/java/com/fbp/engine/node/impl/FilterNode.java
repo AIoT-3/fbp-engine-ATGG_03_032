@@ -4,7 +4,7 @@ import com.fbp.engine.message.Message;
 
 public class FilterNode extends AbstractNode{
     private final String key;
-    private double threshold;
+    private final double threshold;
 
     public FilterNode(String id, String key, double threshold) {
         super(id);

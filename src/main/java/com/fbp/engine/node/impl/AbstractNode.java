@@ -12,9 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AbstractNode implements Node {
-    private String id;
-    private Map<String, InputPort> inputPorts;
-    private Map<String, OutputPort> outputPorts;
+    private final String id;
+    private final Map<String, InputPort> inputPorts;
+    private final Map<String, OutputPort> outputPorts;
 
     public AbstractNode(String id) {
         if(id == null || id.isBlank()){

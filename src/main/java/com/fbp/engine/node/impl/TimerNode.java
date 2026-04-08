@@ -8,7 +8,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class TimerNode extends AbstractNode {
-    private long intervalMs;
+    private final long intervalMs;
     private int tickCount;
     private ScheduledExecutorService scheduler;
 

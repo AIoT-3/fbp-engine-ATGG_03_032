@@ -47,9 +47,9 @@ public class Message {
             throw new IllegalArgumentException("value must be notNull");
         }
 
-        if(payload.containsKey(key)){
-            throw new DuplicatePayloadKeyException(key);
-        }
+//        if(payload.containsKey(key)){
+//            throw new DuplicatePayloadKeyException(key);
+//        }
 
         Map<String, Object> newPayload = new HashMap<>(Map.copyOf(payload));
         newPayload.put(key,value);
