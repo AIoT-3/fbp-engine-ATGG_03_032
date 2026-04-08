@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.*;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -30,57 +31,151 @@ public class ConnectionTest {
 
     @Order(1)
     @Test
-    @DisplayName("deliver 후 target 수신")
-    void shouldDeliverMessageToTarget(){
-        Message testMessage = new Message(Map.of("test", "value"));
+    @DisplayName("deliver-poll 기본 동작")
+    void deliveredMessageCanPoll(){
+        connection.deliver(new Message(
+                Map.of("key","value")
+        ));
 
-        connection.deliver(testMessage);
-
-        verify(inputPort, times(1))
-                .receive(testMessage);
+        Assertions.assertNotNull(connection.poll());
     }
 
     @Order(2)
     @Test
-    @DisplayName("target 미설정 시 동작")
-    void ifTargetNullNotThrowException(){
-        Connection ttestt = new Connection("ttestt");
+    @DisplayName("메시지 순서 보장")
+    void messageOrderFifo(){
+        for(int i=0; i<5; i++) {
+            connection.deliver(new Message(
+                    Map.of("key" + i, "value" + i)
+            ));
+        }
 
-        Assertions.assertDoesNotThrow(
-                () -> ttestt.deliver(new Message(Map.of("test", "value")))
-        );
+        for(int i=0; i<5; i++){
+            Assertions.assertTrue(connection.poll().toString().contains("value"+i));
+        }
     }
 
     @Order(3)
     @Test
-    @DisplayName("버퍼 크기 확인")
-    void shouldStoreMessageInBufferWhenTargetIsNull(){
-        Connection ttestt = new Connection("ttestt");
-        Message testMessage = new Message(Map.of("test", "value"));
+    @DisplayName("멀티스레드 deliver-poll")
+    void multiThreadDeliverPoll() throws InterruptedException {
+        CountDownLatch latch1 = new CountDownLatch(1);
+        CountDownLatch latch2 = new CountDownLatch(2);
+        final Message[] message = {null};
 
-        ttestt.deliver(testMessage);
+        Thread thread = new Thread(() -> {
+            connection.deliver(new Message(Map.of("test", "value")));
+            latch1.countDown();
+            latch2.countDown();
+        });
 
-        Assertions.assertEquals(1, ttestt.getBufferSize());
+        Thread thread1 = new Thread(() -> {
+            try {
+                message[0] = connection.poll();
+            }finally {
+                latch2.countDown();
+            }
+        });
+
+        thread.start();
+        latch1.await();
+
+        thread1.start();
+        latch2.await();
+
+        Assertions.assertNotNull(message[0]);
     }
 
     @Order(4)
     @Test
-    @DisplayName("다수 메시지 순서 보장")
-    void shouldPreserveMessageOrder(){
-        ArgumentCaptor<Message> messageCaptor = ArgumentCaptor.forClass(Message.class);
-        int count = 100;
+    @DisplayName("poll 대기 동작")
+    void pollWaiting(){
+        final Message[] message = {null};
+        CountDownLatch countDownLatch1 = new CountDownLatch(1);
+        CountDownLatch countDownLatch = new CountDownLatch(2);
+        Message expectedMessage = new Message(java.util.Map.of("test", "blocking"));
 
-        for(int i=0; i < count; i++) {
-            Message testMessage = new Message(Map.of("test" + i, "value" + i));
-            connection.deliver(testMessage);
+        Thread consumer = new Thread(
+                () -> {
+                    try {
+                        countDownLatch1.await();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    message[0] = connection.poll();
+                    countDownLatch.countDown();
+                }
+        );
+        consumer.start();
+        Assertions.assertNull(message[0]);
+
+        Thread provider = new Thread(
+                () ->{
+                    connection.deliver(expectedMessage);
+                    countDownLatch1.countDown();
+                    countDownLatch.countDown();
+                }
+        );
+        provider.start();
+
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
-
-        verify(inputPort, times(count)).receive(messageCaptor.capture());
-
-        List<Message> capturedMessages = messageCaptor.getAllValues();
-
-        for (int i = 0; i < count; i++) {
-            Assertions.assertEquals("value"+i, capturedMessages.get(i).get("test"+i));
-        }
+        Assertions.assertEquals(expectedMessage, message[0]);
     }
+
+    @Order(5)
+    @Test
+    @DisplayName("버퍼 크기 제한")
+    void bufferLimit(){
+        Connection testConn = new Connection("tc", 2);
+
+        Thread thread = new Thread(
+                () ->{
+                    for(int i=0; i<3; i++){
+                        testConn.deliver(new Message(
+                                Map.of("key", "value")
+                                )
+                        );
+                    }
+                }
+        );
+        thread.start();
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        Assertions.assertEquals(Thread.State.WAITING, thread.getState());
+    }
+
+    @Order(6)
+    @Test
+    @DisplayName("버퍼 크기 조회")
+    void bufferSizeCheck(){
+        Thread thread = new Thread(
+                () ->{
+                    for(int i=0; i<10; i++){
+                        connection.deliver(new Message(
+                                        Map.of("key", "value")
+                                )
+                        );
+                    }
+                }
+        );
+        thread.start();
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        Assertions.assertEquals(10, connection.getBufferSize());
+    }
+
 }
