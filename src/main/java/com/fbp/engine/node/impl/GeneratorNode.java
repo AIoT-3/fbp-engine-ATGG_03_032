@@ -28,8 +28,21 @@ public class GeneratorNode implements Node {
     }
 
     @Override
+    public void initialize() {
+        //Nothing to do
+        throw new IllegalStateException();
+    }
+
+    @Override
+    public void shutdown() {
+        //Nothing to do
+        throw new IllegalStateException();
+    }
+
+    @Override
     public void process(Message message) {
         //Nothing to do
+        throw new IllegalStateException();
     }
 
     public void generate(String key, Object value){

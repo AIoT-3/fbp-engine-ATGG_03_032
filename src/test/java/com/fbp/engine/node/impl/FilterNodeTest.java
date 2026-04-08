@@ -18,13 +18,19 @@ import static org.mockito.Mockito.verify;
 public class FilterNodeTest {
     @Mock
     Connection connection;
+    FilterNode filterNode;
 
-    private FilterNode filterNode;
+    Connection realConn;
+    FilterNode filterNode2;
 
     @BeforeEach
     void setUp() {
         filterNode = new FilterNode("filter-1", "temperature", 30.0);
-        filterNode.getOutputPort().connect(connection);
+        filterNode.getOutputPort("out").connect(connection);
+
+        realConn = new Connection("real-conn");
+        filterNode2 = new FilterNode("filter-1", "temperature", 30.0);
+        filterNode2.getOutputPort("out").connect(realConn);
     }
 
     @Order(1)
@@ -61,5 +67,34 @@ public class FilterNodeTest {
         Message msg = new Message(Map.of("humidity", 50.0));
         Assertions.assertDoesNotThrow(() -> filterNode.process(msg));
         verify(connection, never()).deliver(any());
+    }
+
+    /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
+    @Order(1)
+    @Test
+    @DisplayName("조건 만족 -> send 호출")
+    void whenConditionSatisfiedThenCallSend(){
+        filterNode2.process(new Message(Map.of("temperature", 35.0)));
+
+        Assertions.assertNotNull(realConn.poll());
+    }
+
+    @Order(2)
+    @Test
+    @DisplayName("조건 미달 -> 차단")
+    void whenConditionUnsatisfiedThenBlock(){
+        filterNode.process(new Message(Map.of("temperature", 29.9)));
+
+        Assertions.assertNull(realConn.poll());
+    }
+
+    @Order(3)
+    @Test
+    @DisplayName("포트 구성 확인")
+    void checkPortConfiguration(){
+        Assertions.assertAll(
+                () -> Assertions.assertNotNull(filterNode.getOutputPort("out")),
+                () -> Assertions.assertNotNull(filterNode.getInputPort("in"))
+        );
     }
 }

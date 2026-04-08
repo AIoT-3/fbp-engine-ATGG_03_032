@@ -65,7 +65,7 @@ public class PrintNodeTest {
     @Test
     @DisplayName("InputPort 조회")
     void getInputPort(){
-        Assertions.assertNotNull(printNode.getInputPort());
+        Assertions.assertNotNull(printNode.getInputPort("in"));
     }
 
     @Order(5)
@@ -76,11 +76,39 @@ public class PrintNodeTest {
         payload.put("temperature", 25.5);
         Message test = new Message(payload);
 
-        printNode.getInputPort().receive(test);
+        printNode.getInputPort("in").receive(test);
 
         String output = outputStreamCaptor.toString();
         Assertions.assertTrue(output.contains("test-printer"));
         Assertions.assertTrue(output.contains("temperature"));
+    }
+
+    /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
+    @Order(1)
+    @Test
+    @DisplayName("포트 구성 확인")
+    void getInputPortNotNull(){
+        Assertions.assertNotNull(printNode.getInputPort("in"));
+    }
+
+    @Order(2)
+    @Test
+    @DisplayName("process 정상 동작")
+    void processSuccessfullyAction(){
+        Assertions.assertDoesNotThrow(
+                () -> {
+                    printNode.process(new Message(
+                            Map.of("key", "value")
+                    ));
+                }
+        );
+    }
+
+    @Order(3)
+    @Test
+    @DisplayName("AbstractNode 상속 확인")
+    void checkPrintNodeInstanceofAbstractNode(){
+        Assertions.assertTrue(printNode instanceof AbstractNode);
     }
 
 }

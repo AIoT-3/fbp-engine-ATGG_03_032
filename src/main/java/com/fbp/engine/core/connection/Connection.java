@@ -36,7 +36,6 @@ public class Connection {
             throw new IllegalArgumentException("message must be notNull");
         }
 
-
         try {
             buffer.put(message);
         } catch (InterruptedException e) {
@@ -47,9 +46,13 @@ public class Connection {
     public Message poll(){
         Message message;
         try {
-            message = buffer.poll(1000, TimeUnit.NANOSECONDS);
+            message = buffer.poll(1000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        }
+
+        if(target != null){
+            target.receive(message);
         }
 
         return message;
