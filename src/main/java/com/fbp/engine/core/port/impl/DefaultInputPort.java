@@ -28,7 +28,7 @@ public class DefaultInputPort implements InputPort {
     @Override
     public void receive(Message message) {
         if(message == null){
-            throw new IllegalArgumentException("message must be notNull");
+            return;
         }
         owner.process(message);
     }

@@ -26,7 +26,6 @@ public class ConnectionTest {
     @BeforeEach
     void setUp(){
         connection = new Connection("test");
-        connection.setTarget(inputPort);
     }
 
     @Order(1)

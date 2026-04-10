@@ -28,7 +28,7 @@ public class MessageTest {
     @Test
     @DisplayName("생성 시 ID 자동 할당")
     void shouldAssignIdAutomaticallyOnCreation(){
-        String id = tm.getId();
+        String id = String.valueOf(tm.getId());
         assertTrue(id != null && !id.isEmpty());
     }
 

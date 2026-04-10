@@ -14,7 +14,7 @@ import java.util.UUID;
 @ToString
 public class Message {
     //UUID
-    private final String id;
+    private final UUID id;
     private final Map<String, Object> payload;
     private final LocalDateTime timestamp;
 
@@ -23,11 +23,12 @@ public class Message {
             throw new IllegalArgumentException("payload must be notEmpty");
         }
 
-        this.id = UUID.randomUUID().toString();
+        this.id = UUID.randomUUID();
         this.payload = Map.copyOf(payload);
         this.timestamp = LocalDateTime.now();
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T get(String key){
         if(key == null || key.isBlank()){
             throw new IllegalArgumentException("key must be notBlank");
@@ -46,10 +47,6 @@ public class Message {
         if(value == null){
             throw new IllegalArgumentException("value must be notNull");
         }
-
-//        if(payload.containsKey(key)){
-//            throw new DuplicatePayloadKeyException(key);
-//        }
 
         Map<String, Object> newPayload = new HashMap<>(Map.copyOf(payload));
         newPayload.put(key,value);

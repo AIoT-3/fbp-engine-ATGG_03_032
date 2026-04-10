@@ -20,17 +20,10 @@ public class FilterNodeTest {
     Connection connection;
     FilterNode filterNode;
 
-    Connection realConn;
-    FilterNode filterNode2;
-
     @BeforeEach
     void setUp() {
         filterNode = new FilterNode("filter-1", "temperature", 30.0);
         filterNode.getOutputPort("out").connect(connection);
-
-        realConn = new Connection("real-conn");
-        filterNode2 = new FilterNode("filter-1", "temperature", 30.0);
-        filterNode2.getOutputPort("out").connect(realConn);
     }
 
     @Order(1)
@@ -74,9 +67,9 @@ public class FilterNodeTest {
     @Test
     @DisplayName("조건 만족 -> send 호출")
     void whenConditionSatisfiedThenCallSend(){
-        filterNode2.process(new Message(Map.of("temperature", 35.0)));
+        filterNode.process(new Message(Map.of("temperature", 35.0)));
 
-        Assertions.assertNotNull(realConn.poll());
+        verify(connection, times(1)).deliver(any());
     }
 
     @Order(2)
@@ -85,7 +78,7 @@ public class FilterNodeTest {
     void whenConditionUnsatisfiedThenBlock(){
         filterNode.process(new Message(Map.of("temperature", 29.9)));
 
-        Assertions.assertNull(realConn.poll());
+        verify(connection, never()).deliver(any());
     }
 
     @Order(3)

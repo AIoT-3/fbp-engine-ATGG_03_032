@@ -1,5 +1,6 @@
 package com.fbp.engine.node.impl;
 
+import com.fbp.engine.core.connection.Connection;
 import com.fbp.engine.core.port.OutputPort;
 import com.fbp.engine.message.Message;
 import org.junit.jupiter.api.*;
@@ -18,13 +19,13 @@ import static org.mockito.Mockito.verify;
 public class GeneratorNodeTest {
     private GeneratorNode generatorNode;
 
-    @Mock
-    private OutputPort mockOutputPort;
+    Connection connection;
 
     @BeforeEach
     void setUp() {
         generatorNode = new GeneratorNode("gen-1");
-        generatorNode.setOutputPort(mockOutputPort);
+        connection = new Connection("conn");
+        generatorNode.getOutputPort("out").connect(connection);
     }
 
     @Order(1)
@@ -33,7 +34,7 @@ public class GeneratorNodeTest {
     void generateShouldSendMessageToOutputPort() {
         generatorNode.generate("key", "value");
 
-        verify(mockOutputPort, times(1)).send(Mockito.any(Message.class));
+        Assertions.assertNotNull(connection.poll());
     }
 
     @Order(2)
@@ -42,19 +43,17 @@ public class GeneratorNodeTest {
     void generatedMessageShouldContainPayload() {
         generatorNode.generate("temperature", 25.5);
 
-        ArgumentCaptor<Message> captor = ArgumentCaptor.forClass(Message.class);
-        verify(mockOutputPort).send(captor.capture());
+        Message message = connection.poll();
 
-        Message captured = captor.getValue();
-        Assertions.assertTrue(captured.hasKey("temperature"));
-        Assertions.assertEquals(25.5, captured.get("temperature"));
+        Assertions.assertEquals(25.5, message.get("temperature"));
     }
 
     @Order(3)
     @Test
     @DisplayName("OutputPort 조회")
     void getOutputPortShouldNotBeNull() {
-        Assertions.assertNotNull(generatorNode.getOutputPort());
+
+        Assertions.assertNotNull(generatorNode.getOutputPort("out"));
     }
 
     @Order(4)
@@ -65,12 +64,8 @@ public class GeneratorNodeTest {
         generatorNode.generate("key", "val2");
         generatorNode.generate("key", "val3");
 
-        ArgumentCaptor<Message> captor = ArgumentCaptor.forClass(Message.class);
-        verify(mockOutputPort, times(3)).send(captor.capture());
-
-        List<Message> captured = captor.getAllValues();
-        Assertions.assertEquals("val1", captured.get(0).get("key"));
-        Assertions.assertEquals("val2", captured.get(1).get("key"));
-        Assertions.assertEquals("val3", captured.get(2).get("key"));
+        Assertions.assertEquals("val1", connection.poll().get("key"));
+        Assertions.assertEquals("val2", connection.poll().get("key"));
+        Assertions.assertEquals("val3", connection.poll().get("key"));
     }
 }

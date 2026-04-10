@@ -36,7 +36,14 @@ public class FilterNode extends AbstractNode{
         if(value < threshold){
             return;
         }
-
         send("out", message);
+    }
+
+    @Override
+    public void initialize() {
+        Thread thread = new Thread(() ->
+        {
+
+        });
     }
 }

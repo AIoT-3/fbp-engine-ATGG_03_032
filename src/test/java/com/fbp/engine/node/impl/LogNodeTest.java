@@ -35,9 +35,7 @@ public class LogNodeTest {
     void intermediateInsertionPossible(){
         GeneratorNode testGen= new GeneratorNode("test-gen");
         Connection connection = new Connection("gen-to-log");
-        testGen.getOutputPort().connect(connection);
-
-        connection.setTarget(target.getInputPort("in"));
+        testGen.getOutputPort("out").connect(connection);
 
         testGen.generate("key","value");
 
