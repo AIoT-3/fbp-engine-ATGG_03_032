@@ -7,6 +7,7 @@ import com.fbp.engine.core.port.impl.DefaultOutputPort;
 import com.fbp.engine.message.Message;
 import com.fbp.engine.node.Node;
 import com.fbp.engine.node.exception.NotFoundPortNameException;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -29,12 +30,12 @@ public abstract class AbstractNode implements Node {
 
     @Override
     public void initialize() {
-        throw new IllegalStateException();
+        log.info(String.format("[%s], initializing", id));
     }
 
     @Override
     public void shutdown() {
-        throw new IllegalStateException();
+        log.info(String.format("[%s], shutdown", id));
     }
 
     protected void addInputPort(String name){

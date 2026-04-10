@@ -26,6 +26,7 @@ public class TimerNode extends AbstractNode {
 
     @Override
     public void initialize() {
+        super.initialize();
         this.scheduler = new ScheduledThreadPoolExecutor(1);
 
         this.scheduler.scheduleAtFixedRate(()->{

@@ -16,4 +16,5 @@ public class PrintNode extends AbstractNode {
         }
         System.out.printf("[%s] %s\n", getId(), message);
     }
+
 }

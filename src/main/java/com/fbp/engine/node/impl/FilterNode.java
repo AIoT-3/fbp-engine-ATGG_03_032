@@ -38,12 +38,4 @@ public class FilterNode extends AbstractNode{
         }
         send("out", message);
     }
-
-    @Override
-    public void initialize() {
-        Thread thread = new Thread(() ->
-        {
-
-        });
-    }
 }

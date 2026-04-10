@@ -1,6 +1,8 @@
 package com.fbp.engine.core.connection;
 
+import com.fbp.engine.core.port.InputPort;
 import com.fbp.engine.message.Message;
+import lombok.Setter;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -10,6 +12,8 @@ public class Connection {
 
     private final String id;
     private final BlockingQueue<Message> buffer;
+    @Setter
+    private InputPort target;
 
     public Connection(String id) {
         this(id,DEFAULT_BUFFER_SIZE);
@@ -47,6 +51,11 @@ public class Connection {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+
+        if(target != null){
+            target.receive(message);
+        }
+
         return message;
     }
 
