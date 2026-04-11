@@ -3,7 +3,6 @@ package com.fbp.engine.core.flow;
 import com.fbp.engine.message.Message;
 import com.fbp.engine.node.impl.*;
 import org.junit.jupiter.api.*;
-import org.mockito.Mock;
 
 import static org.mockito.Mockito.*;
 
@@ -141,10 +140,15 @@ public class FlowTest {
         PrintNode printNode = spy(new PrintNode("p"));
         GeneratorNode generatorNode = spy(new GeneratorNode("g"));
 
+        when(filterNode.getId()).thenReturn("f");
+        when(printNode.getId()).thenReturn("p");
+        when(generatorNode.getId()).thenReturn("g");
+
         target.addNode(filterNode)
                 .addNode(printNode)
                 .addNode(generatorNode);
 
+        target.initialize();
         target.shutdown();
 
         verify(filterNode,times(1)).shutdown();
