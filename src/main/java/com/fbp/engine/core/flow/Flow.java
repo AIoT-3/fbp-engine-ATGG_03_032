@@ -4,13 +4,22 @@ import com.fbp.engine.core.connection.Connection;
 import com.fbp.engine.core.port.InputPort;
 import com.fbp.engine.core.port.OutputPort;
 import com.fbp.engine.node.impl.AbstractNode;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+@Slf4j
 public class Flow {
+    @Getter
     private final String id;
     private final Map<String, AbstractNode> nodes;
     private final List<Connection> connections;
+    private ExecutorService executorService;
+    @Getter
+    private FlowEngine.State state;
 
     public Flow(String id) {
         if(id == null || id.isBlank()){
@@ -20,6 +29,8 @@ public class Flow {
 
         nodes = new HashMap<>();
         connections = new ArrayList<>();
+
+        state = FlowEngine.State.INITIALIZED;
     }
 
     public Flow addNode(AbstractNode node){
@@ -78,15 +89,46 @@ public class Flow {
     }
 
     public void initialize(){
+        if(this.state == FlowEngine.State.RUNNING){
+            return ;
+        }
         for(AbstractNode node: nodes.values()){
             node.initialize();
         }
+
+        executorService = Executors.newCachedThreadPool();
+
+        connections.forEach(connection -> {
+            executorService.submit(()->{
+                while(!Thread.currentThread().isInterrupted()){
+                    connection.poll();
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    } catch (Exception e){
+                        log.error("Error polling connection: " + connection.getId(), e);
+                    }
+                }
+            });
+        });
+
+        this.state = FlowEngine.State.RUNNING;
     }
 
     public void shutdown(){
+        if(state!=FlowEngine.State.RUNNING){
+            return;
+        }
+
         for(AbstractNode node: nodes.values()){
             node.shutdown();
         }
+
+        executorService.shutdownNow();
+
+        this.state = FlowEngine.State.STOPPED;
     }
 
     public List<AbstractNode> getNodes(){
@@ -220,7 +262,6 @@ public class Flow {
         if (!nodes.containsKey(sourceNodeId)) {
             return false;
         }
-
         if (!nodes.containsKey(targetNodeId)) {
             return false;
         }
