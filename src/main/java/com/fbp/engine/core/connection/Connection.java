@@ -12,7 +12,6 @@ public class Connection {
 
     private final String id;
     private final BlockingQueue<Message> buffer;
-    @Setter
     private InputPort target;
 
     public Connection(String id) {
@@ -57,6 +56,10 @@ public class Connection {
         }
 
         return message;
+    }
+
+    public void setTarget(InputPort inputPort){
+        this.target=inputPort;
     }
 
     public int getBufferSize(){

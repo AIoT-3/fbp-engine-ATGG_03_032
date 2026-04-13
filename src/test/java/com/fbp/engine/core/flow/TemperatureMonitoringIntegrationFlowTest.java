@@ -1,10 +1,11 @@
-package com.fbp.engine.node.impl;
+package com.fbp.engine.core.flow;
 
-import com.fbp.engine.core.flow.Flow;
 import com.fbp.engine.message.Message;
+import com.fbp.engine.node.impl.CollectorNode;
+import com.fbp.engine.node.impl.TemperatureSensorNode;
+import com.fbp.engine.node.impl.ThresholdFilterNode;
+import com.fbp.engine.node.impl.TimerNode;
 import org.junit.jupiter.api.*;
-
-import java.util.Map;
 
 public class TemperatureMonitoringIntegrationFlowTest {
     Flow flow;

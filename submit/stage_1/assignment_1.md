@@ -36,3 +36,38 @@
 | ArrayList                | 가장 많음           | 복잡함       | 100% (단일 코어 전체) |
 | synchronized             | 중간              | 중간        | 3.6% ~ 4.0%     |
 | BlockingQueue            | 적음              | 쉬움        | 3.4% ~ 3.8%     |
+
+
+### 전체 테스트 현황 점검
+| 테스트 클래스 | 작성 시점 | 테스트 항목 수 | 상태 |
+|-------------|----------|:----------:|--|
+| `MessageTest` | Step 2 과제 2-6 | 15개 | [x] |
+| `PrintNodeTest` (Step 2 기본) | Step 2 과제 2-6 | 3개 | [x] |
+| `ConnectionTest` (Queue 버전) | Step 3 과제 3-11 | 4개 | [x] |
+| `DefaultOutputPortTest` | Step 3 과제 3-11 | 3개 | [x] |
+| `DefaultInputPortTest` | Step 3 과제 3-11 | 2개 | [x] |
+| `FilterNodeTest` (Step 3 버전) | Step 3 과제 3-11 | 4개 | [x] |
+| `GeneratorNodeTest` | Step 3 과제 3-11 | 4개 | [x] |
+| `PrintNodeTest` (Step 3 Port 버전) | Step 3 과제 3-11 | 2개 | [x] |
+| `ConnectionTest` (BlockingQueue 버전) | Step 4 과제 4-7 | 6개 | [x] |
+| `AbstractNodeTest` | Step 5 과제 5-8 | 6개 | [x] |
+| `TimerNodeTest` | Step 5 과제 5-8 | 4개 | [x] |
+| `PrintNodeTest` (Step 5 리팩토링 후) | Step 5 과제 5-8 | 3개 | [x] |
+| `FilterNodeTest` (리팩토링 후) | Step 5 과제 5-8 | 3개 | [x] |
+| `LogNodeTest` | Step 5 과제 5-8 | 2개 | [x] |
+| `TransformNodeTest` | Step 6 과제 6-8 | 3개 | [x] |
+| `SplitNodeTest` | Step 6 과제 6-8 | 4개 | [x] |
+| `CounterNodeTest` | Step 6 과제 6-8 | 3개 | [x] |
+| `DelayNodeTest` | Step 6 과제 6-8 | 2개 | [x] |
+| `FlowTest` | Step 7 과제 7-6 | 12개 | [x] |
+| `FlowEngineTest` | Step 8 과제 8-6 | 9개 | [x] |
+| `TemperatureSensorNodeTest` | Step 9 과제 9-8 | 4개 | [x] |
+| `ThresholdFilterNodeTest` | Step 9 과제 9-8 | 5개 | [x] |
+| `AlertNodeTest` | Step 9 과제 9-8 | 2개 | [x] |
+| `FileWriterNodeTest` | Step 9 과제 9-8 | 3개 | [x] |
+| `HumiditySensorNodeTest` | Step 9 과제 9-8 | 4개 | [x] |
+| `MergeNodeTest` | Step 9 과제 9-8 | 4개 | [x] |
+| 온도 모니터링 통합 테스트 | Step 9 과제 9-8 | 3개 | [x] |
+| `CollectorNodeTest` | Step 10 과제 10-1 | 5개 | [x] |
+| 최종 종합 통합 테스트 | Step 10 과제 10-6 | 7개 | [x] |
+| **합계** | | **약 125개** |  |

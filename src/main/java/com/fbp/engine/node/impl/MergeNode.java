@@ -36,7 +36,7 @@ public class MergeNode extends AbstractNode{
             throw new IllegalArgumentException("came in portName must be 'in-1' or 'in-2'");
         }
 
-//        synchronized (this) {
+        synchronized (this) {
             if (!pending1Queue.isEmpty() && !pending2Queue.isEmpty()) {
                 Message pending1 = pending1Queue.poll();
                 Message pending2 = pending2Queue.poll();
@@ -48,6 +48,6 @@ public class MergeNode extends AbstractNode{
                     send("out", new Message(mergedPayload));
                 }
             }
-//        }
+        }
     }
 }
