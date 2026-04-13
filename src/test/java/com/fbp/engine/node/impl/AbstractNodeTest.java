@@ -17,7 +17,7 @@ public class AbstractNodeTest {
         testId = "test";
         testNode = new AbstractNode(testId) {
             @Override
-            public void onProcess(Message message) {
+            public void onProcess(String portName, Message message) {
                 onProcessed = true;
             }
         };
@@ -61,7 +61,7 @@ public class AbstractNodeTest {
     @Test
     @DisplayName("process -> onProcess 호출")
     void processShouldCallOnProcess(){
-        testNode.process(new Message(Map.of("noMeans", "value")));
+        testNode.process("in", new Message(Map.of("noMeans", "value")));
 
         Assertions.assertTrue(onProcessed);
     }

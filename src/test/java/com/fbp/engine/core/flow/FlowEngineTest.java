@@ -118,12 +118,12 @@ public class FlowEngineTest {
         Flow flow = new Flow("flow");
         flow.addNode(new AbstractNode("module") {
             @Override
-            public void onProcess(Message message) {}
+            public void onProcess(String portName, Message message) {}
         });
         Flow flow1 = new Flow("flow1");
         flow1.addNode(new AbstractNode("module") {
             @Override
-            public void onProcess(Message message) {}
+            public void onProcess(String portName, Message message) {}
         });
 
         flowEngine.register(flow);
@@ -145,12 +145,12 @@ public class FlowEngineTest {
         Flow flow = new Flow("flow");
         flow.addNode(new AbstractNode("module") {
             @Override
-            public void onProcess(Message message) {}
+            public void onProcess(String portName, Message message) {}
         });
         Flow flow1 = new Flow("flow1");
         flow1.addNode(new AbstractNode("module") {
             @Override
-            public void onProcess(Message message) {}
+            public void onProcess(String portName, Message message) {}
         });
 
         flowEngine.register(flow);

@@ -24,7 +24,7 @@ public class LogNodeTest {
     @Test
     @DisplayName("메시지 통과 전달")
     void messagePassingForwarding(){
-        target.process(new Message(Map.of("key", "value")));
+        target.process("in", new Message(Map.of("key", "value")));
 
         Assertions.assertNotNull(connModule.poll());
     }
@@ -42,7 +42,7 @@ public class LogNodeTest {
         Message poll = connection.poll();
         Assertions.assertNotNull(poll);
 
-        target.process(poll);
+        target.process("in", poll);
 
         Assertions.assertNotNull(connModule.poll());
     }

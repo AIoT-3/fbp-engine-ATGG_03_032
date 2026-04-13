@@ -15,9 +15,11 @@ import java.util.concurrent.Executors;
 public class Flow {
     @Getter
     private final String id;
+
     private final Map<String, AbstractNode> nodes;
     private final List<Connection> connections;
     private ExecutorService executorService;
+
     @Getter
     private FlowEngine.State state;
 
@@ -70,13 +72,12 @@ public class Flow {
 
         OutputPort outputPort = sourceNode.getOutputPort(sourcePort);
         if(outputPort == null){
-            throw new IllegalArgumentException(String.format("node:%s not founded fort:%s", sourceNodeId, sourcePort));
+            throw new IllegalArgumentException(String.format("node:%s not founded Output fort:%s", sourceNodeId, sourcePort));
         }
 
         InputPort inputPort = targetNode.getInputPort(targetPort);
         if(inputPort == null){
-            throw new IllegalArgumentException(String.format("node:%s not founded fort:%s", sourceNodeId, sourcePort));
-
+            throw new IllegalArgumentException(String.format("node:%s not founded Input fort:%s", targetNodeId, targetPort));
         }
 
         Connection connection = new Connection(String.format("%s:%s->%s:%s", sourceNodeId, sourcePort, targetNodeId, targetPort));
@@ -90,7 +91,7 @@ public class Flow {
 
     public void initialize(){
         if(this.state == FlowEngine.State.RUNNING){
-            return ;
+            return;
         }
         for(AbstractNode node: nodes.values()){
             node.initialize();
@@ -103,7 +104,7 @@ public class Flow {
                 while(!Thread.currentThread().isInterrupted()){
                     connection.poll();
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(10);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         break;
@@ -118,16 +119,13 @@ public class Flow {
     }
 
     public void shutdown(){
-        if(state!=FlowEngine.State.RUNNING){
-            return;
-        }
-
         for(AbstractNode node: nodes.values()){
             node.shutdown();
         }
 
-        executorService.shutdownNow();
-
+        if(executorService != null) {
+            executorService.shutdownNow();
+        }
         this.state = FlowEngine.State.STOPPED;
     }
 

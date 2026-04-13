@@ -65,8 +65,7 @@ public class MessageTest {
     @Test
     @DisplayName("존재하지 않는 키 조회")
     void shouldReturnNullWhenKeyDoesNotExist(){
-        Assertions.assertThrows(NotFoundPayloadKeyException.class,
-                () -> tm.get("없는키"));
+        Assertions.assertNull(tm.get("없는키"));
     }
 
     @Order(6)

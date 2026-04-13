@@ -1,6 +1,7 @@
 package com.fbp.engine.node.impl;
 
 import com.fbp.engine.message.Message;
+import lombok.Getter;
 
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
@@ -9,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TimerNode extends AbstractNode {
     private final long intervalMs;
+    @Getter
     private int tickCount;
     private ScheduledExecutorService scheduler;
 
@@ -39,11 +41,13 @@ public class TimerNode extends AbstractNode {
 
     @Override
     public void shutdown() {
-        scheduler.shutdown();
+        if(scheduler !=null && !scheduler.isShutdown()) {
+            scheduler.shutdown();
+        }
     }
 
     @Override
-    public void onProcess(Message message) {
+    public void onProcess(String portName, Message message) {
         //nothing to do
         throw new IllegalStateException();
     }

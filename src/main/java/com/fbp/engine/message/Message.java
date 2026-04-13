@@ -33,9 +33,6 @@ public class Message {
         if(key == null || key.isBlank()){
             throw new IllegalArgumentException("key must be notBlank");
         }
-        if(!payload.containsKey(key)){
-            throw new NotFoundPayloadKeyException(key);
-        }
 
         return (T) payload.get(key);
     }

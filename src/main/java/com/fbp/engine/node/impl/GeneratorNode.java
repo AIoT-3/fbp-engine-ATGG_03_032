@@ -1,14 +1,8 @@
 package com.fbp.engine.node.impl;
 
-import com.fbp.engine.core.port.OutputPort;
-import com.fbp.engine.core.port.impl.DefaultOutputPort;
 import com.fbp.engine.message.Message;
-import com.fbp.engine.node.Node;
-import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collections;
 import java.util.Map;
-import java.util.Objects;
 
 public class GeneratorNode extends AbstractNode{
 
@@ -19,7 +13,7 @@ public class GeneratorNode extends AbstractNode{
 
 
     @Override
-    public void onProcess(Message message) {
+    public void onProcess(String portName, Message message) {
         throw new IllegalStateException();
     }
 

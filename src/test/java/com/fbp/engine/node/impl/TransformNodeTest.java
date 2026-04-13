@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 
 import java.util.Map;
 
@@ -28,7 +27,7 @@ public class TransformNodeTest {
     void transformingSuccessfully(){
         TransformNode transformNode = spy(new TransformNode("tra", message -> transformedMessage));
 
-        transformNode.process(mockMessage);
+        transformNode.process("in", mockMessage);
 
         verify(transformNode, times(1)).send("out", transformedMessage);
     }
@@ -39,7 +38,7 @@ public class TransformNodeTest {
     void whenNullReturnThenNotSend(){
         TransformNode transformNode = spy((new TransformNode("tra", message -> null)));
 
-        transformNode.process(mockMessage);
+        transformNode.process("in", mockMessage);
 
         verify(transformNode, never()).send(any(),any());
     }
@@ -54,7 +53,7 @@ public class TransformNodeTest {
             return msg.withEntry("test", "new");
         });
 
-        node.onProcess(original);
+        node.onProcess("in", original);
 
         assertEquals("original",original.get("test"));
     }

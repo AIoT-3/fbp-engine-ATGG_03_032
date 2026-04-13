@@ -3,7 +3,6 @@ package com.fbp.engine.core.flow;
 import com.fbp.engine.message.Message;
 import com.fbp.engine.node.impl.*;
 import org.junit.jupiter.api.*;
-import org.mockito.Mock;
 
 import static org.mockito.Mockito.*;
 
@@ -21,7 +20,7 @@ public class FlowTest {
     void addNode(){
         AbstractNode node = new AbstractNode("node-module") {
             @Override
-            public void onProcess(Message message) {
+            public void onProcess(String portName, Message message) {
 
             }
         };
@@ -137,16 +136,19 @@ public class FlowTest {
     @Test
     @DisplayName("shutdown - 전체 호출")
     void shutdownCallAll(){
+        TimerNode timerNode = spy(new TimerNode("t",500));
         FilterNode filterNode = spy(new FilterNode("f","f",0));
         PrintNode printNode = spy(new PrintNode("p"));
         GeneratorNode generatorNode = spy(new GeneratorNode("g"));
 
-        target.addNode(filterNode)
+        target.addNode(timerNode).
+                addNode(filterNode)
                 .addNode(printNode)
                 .addNode(generatorNode);
 
         target.shutdown();
 
+        verify(timerNode,times(1)).shutdown();
         verify(filterNode,times(1)).shutdown();
         verify(printNode,times(1)).shutdown();
         verify(generatorNode, times(1)).shutdown();

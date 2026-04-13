@@ -25,7 +25,7 @@ public class CounterNodeTest {
     @Test
     @DisplayName("count 키 추가")
     void whenSendThenIncreaseCount(){
-        counterNode.process(message);
+        counterNode.process("in",message);
 
         Message poll = connection.poll();
 
@@ -36,9 +36,9 @@ public class CounterNodeTest {
     @Test
     @DisplayName("count 누적")
     void countCumulative(){
-        counterNode.process(message);
-        counterNode.process(message);
-        counterNode.process(message);
+        counterNode.process("in", message);
+        counterNode.process("in", message);
+        counterNode.process("in", message);
 
         connection.poll();
         connection.poll();
@@ -51,7 +51,7 @@ public class CounterNodeTest {
     @Test
     @DisplayName("원본 키 유지")
     void keepOriginalKey(){
-        counterNode.process(message);
+        counterNode.process("in", message);
 
         Message poll = connection.poll();
 

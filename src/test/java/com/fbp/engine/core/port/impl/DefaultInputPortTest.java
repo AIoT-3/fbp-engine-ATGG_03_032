@@ -11,6 +11,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+
 @ExtendWith(MockitoExtension.class)
 public class DefaultInputPortTest {
     @Mock
@@ -31,7 +34,7 @@ public class DefaultInputPortTest {
 
         defaultInputPort.receive(testMessage);
 
-        Mockito.verify(mockOwner, Mockito.times(1)).process(testMessage);
+        Mockito.verify(mockOwner, Mockito.times(1)).process("in",testMessage);
     }
 
     @Order(2)

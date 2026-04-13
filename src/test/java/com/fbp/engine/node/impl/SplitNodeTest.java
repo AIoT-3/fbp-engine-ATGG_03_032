@@ -25,7 +25,7 @@ public class SplitNodeTest {
     void conditionSatisfiedSendMatchPort(){
         Message message = new Message(Map.of("test", 36));
 
-        splitNode.process(message);
+        splitNode.process("in", message);
 
         verify(splitNode, times(1)).send("match", message);
         verify(splitNode, never()).send("mismatch", message);
@@ -37,7 +37,7 @@ public class SplitNodeTest {
     void conditionUnsatisfiedSendMismatchPort(){
         Message message = new Message(Map.of("test", 34));
 
-        splitNode.process(message);
+        splitNode.process("in", message);
 
         verify(splitNode, never()).send("match", message);
         verify(splitNode, times(1)).send("mismatch", message);
@@ -51,8 +51,8 @@ public class SplitNodeTest {
         Message matchedMessage = new Message(Map.of("test", 36));
         Message mismatchedMessage = new Message(Map.of("test", 34));
 
-        splitNode.process(matchedMessage);
-        splitNode.process(mismatchedMessage);
+        splitNode.process("in",matchedMessage);
+        splitNode.process("in",mismatchedMessage);
 
         verify(splitNode, times(1)).send("match", matchedMessage);
         verify(splitNode, times(1)).send("mismatch", mismatchedMessage);
@@ -64,7 +64,7 @@ public class SplitNodeTest {
     void checkBoundary(){
         Message message = new Message(Map.of("test", 35));
 
-        splitNode.process(message);
+        splitNode.process("in",message);
 
         verify(splitNode, times(1)).send("match", message);
         verify(splitNode, never()).send("mismatch", message);

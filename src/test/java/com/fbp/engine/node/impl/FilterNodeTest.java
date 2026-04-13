@@ -31,7 +31,7 @@ public class FilterNodeTest {
     @DisplayName("조건 만족 시 통과")
     void passWhenConditionMet() {
         Message msg = new Message(Map.of("temperature", 35.0));
-        filterNode.process(msg);
+        filterNode.process("in", msg);
         verify(connection, times(1)).deliver(msg);
     }
 
@@ -40,7 +40,7 @@ public class FilterNodeTest {
     @DisplayName("조건 미달 시 차단")
     void blockWhenConditionNotMet() {
         Message msg = new Message(Map.of("temperature", 25.0));
-        filterNode.process(msg);
+        filterNode.process("in", msg);
         verify(connection, never()).deliver(any());
     }
 
@@ -49,7 +49,7 @@ public class FilterNodeTest {
     @DisplayName("경계값 처리")
     void passOnBoundaryValue() {
         Message msg = new Message(Map.of("temperature", 30.0));
-        filterNode.process(msg);
+        filterNode.process("in", msg);
         verify(connection, times(1)).deliver(msg);
     }
 
@@ -58,7 +58,7 @@ public class FilterNodeTest {
     @DisplayName("키 없는 메시지")
     void handleMessageWithoutKeySafely() {
         Message msg = new Message(Map.of("humidity", 50.0));
-        Assertions.assertDoesNotThrow(() -> filterNode.process(msg));
+        Assertions.assertDoesNotThrow(() -> filterNode.process("in", msg));
         verify(connection, never()).deliver(any());
     }
 
@@ -67,7 +67,7 @@ public class FilterNodeTest {
     @Test
     @DisplayName("조건 만족 -> send 호출")
     void whenConditionSatisfiedThenCallSend(){
-        filterNode.process(new Message(Map.of("temperature", 35.0)));
+        filterNode.process("in", new Message(Map.of("temperature", 35.0)));
 
         verify(connection, times(1)).deliver(any());
     }
@@ -76,7 +76,7 @@ public class FilterNodeTest {
     @Test
     @DisplayName("조건 미달 -> 차단")
     void whenConditionUnsatisfiedThenBlock(){
-        filterNode.process(new Message(Map.of("temperature", 29.9)));
+        filterNode.process("in", new Message(Map.of("temperature", 29.9)));
 
         verify(connection, never()).deliver(any());
     }

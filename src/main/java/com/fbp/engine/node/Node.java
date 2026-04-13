@@ -7,5 +7,5 @@ public interface Node {
     void shutdown();
 
     String getId();
-    void process(Message message);
+    void process(String portName, Message message);
 }

@@ -15,7 +15,7 @@ public class CounterNode extends AbstractNode{
     }
 
     @Override
-    public void onProcess(Message message) {
+    public void onProcess(String portName, Message message) {
         if(message == null){
             throw new IllegalArgumentException("message must be notNull");
         }

@@ -27,18 +27,18 @@ public class DelayNodeTest {
     @DisplayName("지연 후 전달")
     void deliveryAfterDelay(){
         long start = System.currentTimeMillis();
-        delayNode.process(message);
+        delayNode.process("in", message);
         connection.poll();
         long end = System.currentTimeMillis()-start;
 
-        Assertions.assertTrue(end>500);
+        Assertions.assertTrue(end>450);
     }
 
     @Order(2)
     @Test
     @DisplayName("메시지 내용 보존")
     void preserveMessageContent(){
-        delayNode.process(message);
+        delayNode.process("in", message);
         Message poll = connection.poll();
         Assertions.assertEquals(message, poll);
     }

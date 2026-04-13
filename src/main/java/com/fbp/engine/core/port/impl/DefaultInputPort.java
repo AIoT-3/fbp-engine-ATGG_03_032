@@ -30,6 +30,6 @@ public class DefaultInputPort implements InputPort {
         if(message == null){
             return;
         }
-        owner.process(message);
+        owner.process(this.name,message);
     }
 }

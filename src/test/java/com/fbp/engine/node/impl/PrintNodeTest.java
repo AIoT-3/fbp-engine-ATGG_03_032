@@ -44,7 +44,7 @@ public class PrintNodeTest {
     @DisplayName("process 정상 동작")
     void successfullyProcess(){
         Assertions.assertDoesNotThrow(
-                () -> printNode.process(new Message(
+                () -> printNode.process("in", new Message(
                         Map.of("test","value")
                 ))
         );
@@ -97,7 +97,7 @@ public class PrintNodeTest {
     void processSuccessfullyAction(){
         Assertions.assertDoesNotThrow(
                 () -> {
-                    printNode.process(new Message(
+                    printNode.process("in", new Message(
                             Map.of("key", "value")
                     ));
                 }

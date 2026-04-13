@@ -14,10 +14,15 @@ public class LogNode extends AbstractNode {
     }
 
     @Override
-    public void onProcess(Message message) {
-        System.out.printf("[%s][%s] %s",
+    public void onProcess(String portName, Message message) {
+        String time = DateTimeFormatter.ofPattern("HH:mm:ss.SSS").format(LocalTime.now());
+        if(message == null){
+            throw new IllegalArgumentException("message must be notNull");
+        }
+
+        System.out.printf("[%s][%s] %s\n",
                 getId(),
-                DateTimeFormatter.ofPattern("HH:mm:ss.SSS").format(LocalTime.now()),
+                time,
                 message);
         send("out", message);
     }

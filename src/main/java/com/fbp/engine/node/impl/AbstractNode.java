@@ -7,7 +7,6 @@ import com.fbp.engine.core.port.impl.DefaultOutputPort;
 import com.fbp.engine.message.Message;
 import com.fbp.engine.node.Node;
 import com.fbp.engine.node.exception.NotFoundPortNameException;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -80,12 +79,12 @@ public abstract class AbstractNode implements Node {
         outputPorts.get(portName).send(message);
     }
 
-    public abstract void onProcess(Message message);
+    public abstract void onProcess(String portName, Message message);
 
     @Override
-    public void process(Message message) {
+    public void process(String portName, Message message) {
         log.info("[{}], processing message...", getId());
-        onProcess(message);
+        onProcess(portName, message);
         log.info("[{}], ...Processing message completed", getId());
     }
 
