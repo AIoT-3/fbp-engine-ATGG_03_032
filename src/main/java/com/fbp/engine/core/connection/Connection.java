@@ -43,19 +43,16 @@ public class Connection {
     }
 
     public Message poll(){
-        Message message = null;
-
         try {
-            message = buffer.take();
+            Message message = buffer.take();
+            if(target != null){
+                target.receive(message);
+            }
+            return message;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            return null;
         }
-
-        if(target != null){
-            target.receive(message);
-        }
-
-        return message;
     }
 
     public void setTarget(InputPort inputPort){

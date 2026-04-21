@@ -2,7 +2,7 @@ package com.fbp.engine.core.port.impl;
 
 import com.fbp.engine.core.port.InputPort;
 import com.fbp.engine.message.Message;
-import com.fbp.engine.node.Node;
+import com.fbp.engine.core.node.Node;
 
 import java.util.Objects;
 

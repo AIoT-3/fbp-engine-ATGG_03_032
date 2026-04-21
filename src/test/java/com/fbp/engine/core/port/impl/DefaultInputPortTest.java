@@ -1,8 +1,7 @@
 package com.fbp.engine.core.port.impl;
 
-import com.fbp.engine.core.connection.Connection;
 import com.fbp.engine.message.Message;
-import com.fbp.engine.node.Node;
+import com.fbp.engine.core.node.Node;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -12,7 +11,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(MockitoExtension.class)
 public class DefaultInputPortTest {

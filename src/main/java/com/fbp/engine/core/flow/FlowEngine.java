@@ -1,24 +1,13 @@
 package com.fbp.engine.core.flow;
 
+import com.fbp.engine.runner.FlowRunner;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 @Slf4j
 public class FlowEngine {
-    protected enum State{
-        INITIALIZED, RUNNING, STOPPED
-    }
-    private Map<String, Flow> flows;
-    private State state;
-
-    public FlowEngine() {
-        this.flows = new HashMap<>();
-        this.state = State.INITIALIZED;
-    }
+    private final Map<String, FlowRunner> runners = new HashMap<>();
 
     public void cliRun(){
         FlowEngineCli flowEngineCli = new FlowEngineCli(this);
@@ -30,64 +19,63 @@ public class FlowEngine {
             throw new IllegalArgumentException("flow must be notNull");
         }
 
-        flows.put(flow.getId(), flow);
+        FlowRunner existing = runners.get(flow.getId());
+        if (existing != null) {
+            throw new IllegalArgumentException(
+                    String.format("flow already registered. flowId: %s", flow.getId())
+            );
+        }
+
+        runners.put(flow.getId(), new FlowRunner(flow));
+
         log.info(String.format("[Engine] flow '%s' registered", flow.getId()));
     }
 
     public void startFlow(String flowId){
-        Flow flow = flows.get(flowId);
-        if(flow == null){
-            throw new IllegalArgumentException("not founded flow flowId:" +flowId);
-        }
-        List<String> errs = flow.validate();
-        if(!errs.isEmpty()){
-            throw new IllegalStateException(errs.toString());
+        FlowRunner flowRunner = runners.get(flowId);
+        if(flowRunner == null){
+            throw new IllegalArgumentException(String.format("not founded flow flowId:%s", flowId));
         }
 
-        flow.initialize();
-        this.state=State.RUNNING;
+        flowRunner.start();
 
         log.info(String.format("[Engine] flow '%s' started", flowId));
     }
 
     public void stopFlow(String flowId){
-        Flow flow = flows.get(flowId);
-        if(flow == null){
-            throw new IllegalArgumentException("not founded flow flowId:" +flowId);
+        FlowRunner flowRunner = runners.get(flowId);
+        if(flowRunner == null){
+            throw new IllegalArgumentException(String.format("not founded flow flowId:%s", flowId));
         }
-        flow.shutdown();
+
+        flowRunner.stop();
 
         log.info(String.format("[Engine] flow '%s' stopped", flowId));
-
-        State state = State.STOPPED;
-        for(Flow floww: flows.values()){
-            if(floww.getState()==State.RUNNING){
-                state=State.RUNNING;
-            }
-        }
-        this.state = state;
     }
 
     public void shutdown(){
-        flows.keySet().iterator().forEachRemaining(this::stopFlow);
-        this.state = State.STOPPED;
-    }
-
-    public State getState(){
-        return this.state;
-    }
-
-    public Map<String, Flow> getFlows(){
-        return this.flows;
+        runners.values().forEach(FlowRunner::stop);
     }
 
     public void listFlows(){
         int i=0;
-        for (Flow value : flows.values()) {
-            i++;
-            System.out.printf("[%d] [%s] state:%s\n", i,value.getId(), value.getState());
-        }
 
+        for (FlowRunner runner : runners.values()) {
+            i++;
+            System.out.printf("[%d] [%s] state:%s\n", i, runner.getFlowId(), runner.getState());
+        }
     }
 
+    public State getState() {
+        if (runners.isEmpty()) {
+            return State.INITIALIZED;
+        }
+        if (runners.values().stream().anyMatch(r -> r.getState() == State.RUNNING)) {
+            return State.RUNNING;
+        }
+        if (runners.values().stream().anyMatch(r -> r.getState() == State.INITIALIZED)) {
+            return State.INITIALIZED;
+        }
+        return State.STOPPED;
+    }
 }

@@ -1,7 +1,7 @@
 package com.fbp.engine.core.flow;
 
 import com.fbp.engine.message.Message;
-import com.fbp.engine.node.impl.*;
+import com.fbp.engine.node.internal.*;
 import org.junit.jupiter.api.*;
 
 import java.io.BufferedReader;
@@ -71,11 +71,11 @@ public class FinalTotalIntegrationTest {
             throw new RuntimeException(e);
         }
 
-        Assertions.assertEquals(FlowEngine.State.RUNNING, flowEngine.getState());
+        Assertions.assertEquals(State.RUNNING, flowEngine.getState());
 
         flowEngine.shutdown();
 
-        Assertions.assertEquals(FlowEngine.State.STOPPED, flowEngine.getState());
+        Assertions.assertEquals(State.STOPPED, flowEngine.getState());
     }
 
     @Order(2)

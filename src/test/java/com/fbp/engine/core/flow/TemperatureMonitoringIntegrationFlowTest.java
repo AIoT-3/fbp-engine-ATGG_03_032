@@ -1,14 +1,19 @@
 package com.fbp.engine.core.flow;
 
 import com.fbp.engine.message.Message;
-import com.fbp.engine.node.impl.CollectorNode;
-import com.fbp.engine.node.impl.TemperatureSensorNode;
-import com.fbp.engine.node.impl.ThresholdFilterNode;
-import com.fbp.engine.node.impl.TimerNode;
+import com.fbp.engine.node.internal.CollectorNode;
+import com.fbp.engine.node.internal.TemperatureSensorNode;
+import com.fbp.engine.node.internal.ThresholdFilterNode;
+import com.fbp.engine.node.internal.TimerNode;
 import org.junit.jupiter.api.*;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class TemperatureMonitoringIntegrationFlowTest {
     Flow flow;
+    ExecutorService executorService;
+
     TimerNode trigger;
     TemperatureSensorNode temperatureSensorNode;
     double threshold = 35;
@@ -36,23 +41,39 @@ public class TemperatureMonitoringIntegrationFlowTest {
                 .connect(thresholdFilterNode.getId(), "normal", normal.getId(), "in");
 
         flow.initialize();
+
+        executorService = Executors.newCachedThreadPool();
+        flow.getConnections().forEach(conn ->
+                executorService.submit(() -> {
+                    while (!Thread.currentThread().isInterrupted()) {
+                        conn.poll();
+                        try {
+                            Thread.sleep(10);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            break;
+                        }
+                    }
+                })
+        );
+    }
+
+    @AfterEach
+    void tearDown() {
+        flow.shutdown();
+        executorService.shutdownNow();
     }
 
     @Order(1)
     @Test
     @DisplayName("alert 경로 검증")
-    void checkAlertPath(){
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
+    void checkAlertPath() throws InterruptedException {
+        Thread.sleep(5000);
         trigger.shutdown();
 
-        for(Message message:alert.getCollected()){
-            if(message!=null){
-                Assertions.assertTrue((Double)(message.get("temperature"))>threshold);
+        for (Message message : alert.getCollected()) {
+            if (message != null) {
+                Assertions.assertTrue((Double) (message.get("temperature")) > threshold);
             }
         }
     }
@@ -60,18 +81,12 @@ public class TemperatureMonitoringIntegrationFlowTest {
     @Order(2)
     @Test
     @DisplayName("normal 경로 검증")
-    void checkNormalPath(){
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+    void checkNormalPath() throws InterruptedException {
+        Thread.sleep(5000);
 
-        flow.shutdown();
-
-        for(Message message:normal.getCollected()){
-            if(message!=null){
-                Assertions.assertTrue((Double)(message.get("temperature"))<=threshold);
+        for (Message message : normal.getCollected()) {
+            if (message != null) {
+                Assertions.assertTrue((Double) (message.get("temperature")) <= threshold);
             }
         }
     }
@@ -79,27 +94,12 @@ public class TemperatureMonitoringIntegrationFlowTest {
     @Order(3)
     @Test
     @DisplayName("전체 메시지 수")
-    void checkTotalMessageCount(){
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
+    void checkTotalMessageCount() throws InterruptedException {
+        Thread.sleep(5000);
         trigger.shutdown();
-
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-
-        flow.shutdown();
+        Thread.sleep(500);
 
         Assertions.assertEquals(trigger.getTickCount(),
-                normal.getCollected().size()+alert.getCollected().size());
+                normal.getCollected().size() + alert.getCollected().size());
     }
-
-
 }

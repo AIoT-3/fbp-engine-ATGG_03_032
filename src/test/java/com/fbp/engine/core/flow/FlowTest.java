@@ -1,7 +1,8 @@
 package com.fbp.engine.core.flow;
 
 import com.fbp.engine.message.Message;
-import com.fbp.engine.node.impl.*;
+import com.fbp.engine.core.node.AbstractNode;
+import com.fbp.engine.node.internal.*;
 import org.junit.jupiter.api.*;
 
 import static org.mockito.Mockito.*;
