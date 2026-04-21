@@ -34,6 +34,7 @@ public class FlowRunner {
         executorService = Executors.newCachedThreadPool();
         flow.getConnections().forEach(conn ->
                 executorService.submit(() -> {
+                    Thread.currentThread().setName(conn.getId());
                     while (!Thread.currentThread().isInterrupted()) {
                         conn.poll();
                     }
