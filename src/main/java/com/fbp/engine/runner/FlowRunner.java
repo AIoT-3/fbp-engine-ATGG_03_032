@@ -23,7 +23,6 @@ public class FlowRunner {
         if (state == State.RUNNING) {
             return;
         }
-
         List<String> errs = flow.validate();
         if(!errs.isEmpty()){
             throw new IllegalStateException(errs.toString());

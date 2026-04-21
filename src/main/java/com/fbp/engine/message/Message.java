@@ -1,18 +1,29 @@
 package com.fbp.engine.message;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fbp.engine.message.exception.DuplicatePayloadKeyException;
 import com.fbp.engine.message.exception.NotFoundPayloadKeyException;
 import lombok.Getter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
+import java.io.Serial;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @Getter
-@ToString
 public class Message {
+    private static final ObjectMapper mapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     //UUID
     private final UUID id;
     private final Map<String, Object> payload;
@@ -26,6 +37,16 @@ public class Message {
         this.id = UUID.randomUUID();
         this.payload = Map.copyOf(payload);
         this.timestamp = LocalDateTime.now();
+    }
+
+    @JsonCreator
+    public Message(
+            @JsonProperty("id") UUID id,
+            @JsonProperty("payload") Map<String, Object> payload,
+            @JsonProperty("timestamp") LocalDateTime timestamp) {
+        this.id = id != null ? id : UUID.randomUUID();
+        this.payload = payload != null ? Map.copyOf(payload) : Map.of();
+        this.timestamp = timestamp != null ? timestamp : LocalDateTime.now();
     }
 
     @SuppressWarnings("unchecked")
@@ -69,5 +90,32 @@ public class Message {
         }
 
         return payload.containsKey(key);
+    }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "id=" + id +
+                ", payload=" + payload +
+                ", timestamp=" + timestamp +
+                '}';
+    }
+
+    public String toJson(){
+        try {
+            return mapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            log.warn("{}",e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Message fromJson(String json) {
+        try {
+            return mapper.readValue(json, Message.class);
+        } catch (JsonProcessingException e) {
+            log.warn("{}",e);
+            throw new RuntimeException(e);
+        }
     }
 }
