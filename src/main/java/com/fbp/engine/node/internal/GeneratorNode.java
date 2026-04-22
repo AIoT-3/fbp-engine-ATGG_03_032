@@ -15,7 +15,7 @@ public class GeneratorNode extends AbstractNode {
 
     @Override
     public void onProcess(String portName, Message message) {
-        throw new IllegalStateException();
+        throw new UnsupportedOperationException("[Node:" + getId() + "] Source-only node");
     }
 
 
