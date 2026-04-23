@@ -48,6 +48,7 @@ public class MqttPublisherNode extends ProtocolNode {
         String brokerUrl = (String) config.get("brokerUrl");
         String clientId = (String) config.get("clientId");
         String topic = (String) config.get("topic");
+
         if(brokerUrl==null){
             throw new IllegalArgumentException("brokerUrl must be notNull");
         }

@@ -1,0 +1,13 @@
+Message{id=8148aabd-b648-4d8b-b0d3-ce14ab3b5f26, payload={unit=C, sensorId=sensor-temperature, temperature=20.5, timestamp=1776933844860}, timestamp=2026-04-23T17:44:04.860050}
+Message{id=b869edb0-547e-4959-b61e-bf52e212d434, payload={unit=C, sensorId=sensor-temperature, temperature=15.0, timestamp=1776933845059}, timestamp=2026-04-23T17:44:05.059281}
+Message{id=0039a604-e294-42c1-a55c-e5bad381541f, payload={unit=C, sensorId=sensor-temperature, temperature=15.2, timestamp=1776933845260}, timestamp=2026-04-23T17:44:05.260559}
+Message{id=9f3d8a7f-e00f-460d-ae2c-26c31877615c, payload={unit=C, sensorId=sensor-temperature, temperature=29.2, timestamp=1776933845361}, timestamp=2026-04-23T17:44:05.361840}
+Message{id=434b72aa-75c7-4ea6-aba8-fb37536cc2c8, payload={unit=C, sensorId=sensor-temperature, temperature=24.0, timestamp=1776933845461}, timestamp=2026-04-23T17:44:05.461845}
+Message{id=ac23b380-29a7-430c-b1cd-51d57c3ddee8, payload={unit=C, sensorId=sensor-temperature, temperature=29.0, timestamp=1776933845658}, timestamp=2026-04-23T17:44:05.658736}
+Message{id=6f6c94f8-0577-463a-a9b1-75a0f0436238, payload={unit=C, sensorId=sensor-temperature, temperature=18.3, timestamp=1776933845757}, timestamp=2026-04-23T17:44:05.757656}
+Message{id=fe1c5849-b8ea-45d3-8824-54d55dc2b28b, payload={unit=C, sensorId=sensor-temperature, temperature=29.2, timestamp=1776933845862}, timestamp=2026-04-23T17:44:05.862129}
+Message{id=eff20e3e-aaaa-48ac-b5d9-07a00d630ced, payload={unit=C, sensorId=sensor-temperature, temperature=15.5, timestamp=1776933845961}, timestamp=2026-04-23T17:44:05.961585}
+Message{id=1006af27-0a0b-4f76-9729-0a714d848152, payload={unit=C, sensorId=sensor-temperature, temperature=22.0, timestamp=1776933846059}, timestamp=2026-04-23T17:44:06.059284}
+Message{id=b2b43c34-9ec1-4d8c-a97c-2f6cb8a02dc3, payload={unit=C, sensorId=sensor-temperature, temperature=26.1, timestamp=1776933846361}, timestamp=2026-04-23T17:44:06.361359}
+Message{id=7c8d81f0-e9ac-45d2-96c9-b6dc4718c248, payload={unit=C, sensorId=sensor-temperature, temperature=18.3, timestamp=1776933846461}, timestamp=2026-04-23T17:44:06.461749}
+Message{id=73faef76-5184-408f-83f3-bff194646fe9, payload={unit=C, sensorId=sensor-temperature, temperature=21.9, timestamp=1776933846661}, timestamp=2026-04-23T17:44:06.661886}
