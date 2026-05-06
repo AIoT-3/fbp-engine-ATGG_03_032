@@ -8,11 +8,16 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Slf4j
 public class ModbusTcpSimulator {
+    private final Set<Socket> activeClients = Collections.synchronizedSet(new HashSet<>());
+
     @Getter
     @Setter
     private ServerSocket serverSocket;
@@ -38,6 +43,7 @@ public class ModbusTcpSimulator {
 
     public void stop(){
         this.running = false;
+
         if(serverSocket!=null && !serverSocket.isClosed()){
             try {
                 serverSocket.close();
@@ -45,6 +51,14 @@ public class ModbusTcpSimulator {
                 log.error("{}", e.getMessage(), e);
             }
         }
+
+        synchronized (activeClients) {
+            for (Socket s : activeClients) {
+                try { s.close(); } catch (IOException e) { log.error("Error closing client socket", e); }
+            }
+            activeClients.clear();
+        }
+
         executorService.shutdownNow();
     }
 
@@ -53,8 +67,14 @@ public class ModbusTcpSimulator {
             try {
                 Socket client = serverSocket.accept();
                 if (client != null) {
+                    activeClients.add(client);
                     executorService.submit(() -> {
-                        handleClient(client);
+                        try {
+                            handleClient(client);
+                        } finally {
+                            activeClients.remove(client);
+                            try { client.close(); } catch (IOException e) {}
+                        }
                     });
                 }
             } catch (IOException e) {
@@ -64,6 +84,7 @@ public class ModbusTcpSimulator {
             }
         }
     }
+
     protected void handleClient(Socket socket){
         try(DataInputStream in = new DataInputStream(socket.getInputStream());
         DataOutputStream out = new DataOutputStream(socket.getOutputStream())){

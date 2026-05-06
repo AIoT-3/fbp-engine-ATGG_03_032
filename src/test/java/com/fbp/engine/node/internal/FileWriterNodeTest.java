@@ -64,11 +64,12 @@ public class FileWriterNodeTest {
     @Order(3)
     @Test
     @DisplayName("shutdown 후 파일 닫힘")
-    void ifShutdownThenFileClose(){
+    void ifShutdownThenFileClose() throws InterruptedException {
         target.initialize();
         target.shutdown();
 
-        Assertions.assertThrows(RuntimeException.class,
+        Thread.sleep(500);
+        Assertions.assertThrows(Exception.class,
                 () -> target.process("in", new Message(Map.of("test","value"))));
     }
 }

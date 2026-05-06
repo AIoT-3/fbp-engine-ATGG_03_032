@@ -122,4 +122,9 @@ public class MqttPublisherNode extends ProtocolNode {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public boolean isConnected() {
+        return client != null && client.isConnected();
+    }
 }

@@ -58,7 +58,8 @@ public class MqttSubscriberNode extends ProtocolNode implements MessageListener 
 
         MqttConnectionOptions options = new MqttConnectionOptions();
         options.setAutomaticReconnect(true);
-        options.setCleanStart(true);
+        boolean cleanSession = getConfig("cleanSession") == null || (boolean) getConfig("cleanSession");
+        options.setCleanStart(cleanSession);
 
         client.connect(options);
 
@@ -74,7 +75,7 @@ public class MqttSubscriberNode extends ProtocolNode implements MessageListener 
     }
 
     @Override
-    protected void disconnect() {
+    public void disconnect() {
         if(client!=null && client.isConnected()){
             try {
                 client.disconnect();
@@ -107,5 +108,10 @@ public class MqttSubscriberNode extends ProtocolNode implements MessageListener 
         payload.put("sourceTopic", topic);
         payload.put("mqttTimestamp", LocalDateTime.now());
         return payload;
+    }
+
+    @Override
+    public boolean isConnected() {
+        return client != null && client.isConnected();
     }
 }

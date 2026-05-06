@@ -4,6 +4,7 @@ import com.fbp.engine.core.node.ProtocolNode;
 import com.fbp.engine.message.Message;
 import com.fbp.engine.protocol.modbus.ModbusTcpClient;
 import com.fbp.engine.protocol.modbus.exception.ModbusException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ startAddress(int),
 count(int),
 registerMapping(Map<String, Object>, 선택)
  */
+@Slf4j
 public class ModbusReaderNode extends ProtocolNode {
     private static final int DEFAULT_PORT = 502;
     private ModbusTcpClient client;
@@ -65,6 +67,7 @@ public class ModbusReaderNode extends ProtocolNode {
         int slaveId = (Integer) getConfig("slaveId");
         int startAddress = (Integer) getConfig("startAddress");
         int count = (Integer) getConfig("count");
+
         try {
             int[] result = client.readHoldingRegisters(slaveId, startAddress, count);
 
@@ -97,10 +100,14 @@ public class ModbusReaderNode extends ProtocolNode {
                 }
             }
             Message resultMessage = new Message(registers);
+
             send("out", resultMessage);
         }catch (ModbusException | IOException e){
-            send("error", new Message(Map.of(
-                    "errorMsg", e.getMessage())));
+            log.error("Modbus read failed", e);
+
+            String errorMsg = (e.getMessage() != null) ? e.getMessage() : e.toString();
+
+            send("error", new Message(Map.of("errorMsg", errorMsg)));
         }
     }
 }

@@ -88,6 +88,7 @@ public abstract class AbstractNode implements Node {
             log.info("[{}], ...Processing message completed", getId());
         } catch (Exception e) {
             log.error("[{}], error during processing on port '{}': {}", getId(), portName, e.getMessage(), e);
+            throw e;
         }
     }
 

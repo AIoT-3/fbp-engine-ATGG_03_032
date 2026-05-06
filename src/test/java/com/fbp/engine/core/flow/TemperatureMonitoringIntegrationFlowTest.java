@@ -68,7 +68,7 @@ public class TemperatureMonitoringIntegrationFlowTest {
     @Test
     @DisplayName("alert 경로 검증")
     void checkAlertPath() throws InterruptedException {
-        Thread.sleep(5000);
+        Thread.sleep(2000);
         trigger.shutdown();
 
         for (Message message : alert.getCollected()) {
@@ -82,7 +82,7 @@ public class TemperatureMonitoringIntegrationFlowTest {
     @Test
     @DisplayName("normal 경로 검증")
     void checkNormalPath() throws InterruptedException {
-        Thread.sleep(5000);
+        Thread.sleep(2000);
 
         for (Message message : normal.getCollected()) {
             if (message != null) {
@@ -95,7 +95,7 @@ public class TemperatureMonitoringIntegrationFlowTest {
     @Test
     @DisplayName("전체 메시지 수")
     void checkTotalMessageCount() throws InterruptedException {
-        Thread.sleep(5000);
+        Thread.sleep(2000);
         trigger.shutdown();
         Thread.sleep(500);
 
