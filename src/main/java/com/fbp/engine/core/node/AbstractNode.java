@@ -83,8 +83,12 @@ public abstract class AbstractNode implements Node {
     @Override
     public void process(String portName, Message message) {
         log.info("[{}], processing message...", getId());
-        onProcess(portName, message);
-        log.info("[{}], ...Processing message completed", getId());
+        try {
+            onProcess(portName, message);
+            log.info("[{}], ...Processing message completed", getId());
+        } catch (Exception e) {
+            log.error("[{}], error during processing on port '{}': {}", getId(), portName, e.getMessage(), e);
+        }
     }
 
     public String getId(){return id;}
