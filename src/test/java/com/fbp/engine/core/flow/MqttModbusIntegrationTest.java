@@ -164,7 +164,7 @@ public class MqttModbusIntegrationTest {
         Flow flow = new Flow("flow");
 
         TemperatureSensorNode temperatureSensorNode = new TemperatureSensorNode("sensor-temperature", 20.0, 45.0);
-        TimerNode timerNode = new TimerNode("trigger", 100);
+        TimerNode timerNode = new TimerNode("trigger", 500);
         MqttPublisherNode thisFlowPub = new MqttPublisherNode("publisher",
                 Map.of("brokerUrl", "tcp://localhost:1883",
                         "clientId", "test-pub-alerter",
@@ -202,7 +202,10 @@ public class MqttModbusIntegrationTest {
 
         Assertions.assertDoesNotThrow(()->Thread.sleep(10000));
 
-        flowEngine.shutdown();
         modbusTcpSimulator.stop();
+
+        flowEngine.stopFlow("flow1");
+        flowEngine.stopFlow("flow");
+        flowEngine.shutdown();
     }
 }
