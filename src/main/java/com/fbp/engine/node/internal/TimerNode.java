@@ -23,7 +23,6 @@ public class TimerNode extends AbstractNode {
 
         this.tickCount = 0;
         this.intervalMs = intervalMs;
-        scheduler = Executors.newSingleThreadScheduledExecutor();
 
         addOutputPort("out");
     }
@@ -31,6 +30,10 @@ public class TimerNode extends AbstractNode {
     @Override
     public void initialize() {
         super.initialize();
+
+        if (scheduler == null || scheduler.isShutdown()) {
+            scheduler = Executors.newSingleThreadScheduledExecutor();
+        }
 
         this.scheduler.scheduleAtFixedRate(()->{
             send("out", new Message(
@@ -42,6 +45,8 @@ public class TimerNode extends AbstractNode {
 
     @Override
     public void shutdown() {
+        super.shutdown();
+
         if(scheduler !=null && !scheduler.isShutdown()) {
             scheduler.shutdown();
         }

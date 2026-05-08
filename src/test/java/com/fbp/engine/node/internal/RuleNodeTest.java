@@ -1,7 +1,7 @@
 package com.fbp.engine.node.internal;
 
 import com.fbp.engine.core.flow.Flow;
-import com.fbp.engine.core.flow.FlowEngine;
+import com.fbp.engine.core.engine.FlowEngine;
 import com.fbp.engine.core.rule.RuleExpression;
 import com.fbp.engine.message.Message;
 import org.junit.jupiter.api.*;
