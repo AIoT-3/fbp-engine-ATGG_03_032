@@ -28,7 +28,6 @@ public class DefaultOutputPort implements OutputPort {
     @Override
     public void connect(Connection connection) {
         Objects.requireNonNull(connection, "connection must be notNull");
-
         this.connections.add(connection);
     }
 
@@ -41,5 +40,10 @@ public class DefaultOutputPort implements OutputPort {
         for(Connection connection: connections){
             connection.deliver(message);
         }
+    }
+
+    @Override
+    public boolean isConnected() {
+        return !connections.isEmpty();
     }
 }

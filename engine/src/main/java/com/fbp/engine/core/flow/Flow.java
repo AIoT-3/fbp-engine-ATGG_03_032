@@ -1,6 +1,10 @@
 package com.fbp.engine.core.flow;
 
 import com.fbp.engine.core.connection.Connection;
+import com.fbp.engine.core.connection.strategy.BackpressureStrategy;
+import com.fbp.engine.core.connection.strategy.BlockStrategy;
+import com.fbp.engine.core.connection.strategy.DropNewestStrategy;
+import com.fbp.engine.core.connection.strategy.DropOldestStrategy;
 import com.fbp.engine.core.port.InputPort;
 import com.fbp.engine.core.port.OutputPort;
 import com.fbp.engine.core.node.AbstractNode;
@@ -38,6 +42,10 @@ public class Flow {
     }
 
     public Flow connect(String sourceNodeId, String sourcePort, String targetNodeId, String targetPort){
+        return connect(sourceNodeId, sourcePort, targetNodeId, targetPort, null, null);
+    }
+
+    public Flow connect(String sourceNodeId, String sourcePort, String targetNodeId, String targetPort, Integer capacity, String backpressure){
         if(sourceNodeId == null || sourceNodeId.isBlank()){
             throw new IllegalArgumentException("sourceNodeId must be notBlank");
         }
@@ -73,7 +81,32 @@ public class Flow {
             throw new IllegalArgumentException(String.format("node:%s not founded Input fort:%s", targetNodeId, targetPort));
         }
 
-        Connection connection = new Connection(String.format("%s:%s->%s:%s", sourceNodeId, sourcePort, targetNodeId, targetPort));
+        String connectionId = String.format("%s:%s->%s:%s", sourceNodeId, sourcePort, targetNodeId, targetPort);
+        Connection connection;
+        
+        if (capacity != null && capacity > 0) {
+            connection = new Connection(connectionId, capacity);
+        } else {
+            connection = new Connection(connectionId);
+        }
+        
+        if (backpressure != null) {
+            BackpressureStrategy strategy;
+            switch (backpressure.toLowerCase()) {
+                case "drop-oldest":
+                    strategy = new DropOldestStrategy();
+                    break;
+                case "drop-newest":
+                    strategy = new DropNewestStrategy();
+                    break;
+                case "block":
+                default:
+                    strategy = new BlockStrategy();
+                    break;
+            }
+            connection.setStrategy(strategy);
+        }
+
         sourceNode.getOutputPort(sourcePort).connect(connection);
         connection.setTarget(targetNode.getInputPort(targetPort));
 

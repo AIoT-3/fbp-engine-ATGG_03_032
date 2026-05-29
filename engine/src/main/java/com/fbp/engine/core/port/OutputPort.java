@@ -7,4 +7,5 @@ public interface OutputPort {
     String getName();
     void connect(Connection connection);
     void send(Message message);
+    boolean isConnected();
 }

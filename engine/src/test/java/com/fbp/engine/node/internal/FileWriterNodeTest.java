@@ -1,5 +1,7 @@
 package com.fbp.engine.node.internal;
 
+import com.fbp.engine.core.connection.Connection;
+import com.fbp.engine.message.ErrorMessage;
 import com.fbp.engine.message.Message;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
@@ -8,8 +10,10 @@ import java.io.*;
 import java.nio.file.Path;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class FileWriterNodeTest {
+class FileWriterNodeTest {
 
     FileWriterNode target;
     File testFile;
@@ -57,9 +61,22 @@ public class FileWriterNodeTest {
         target.initialize();
         target.shutdown();
 
-        Thread.sleep(500);
+        Thread.sleep(100);
 
-        Assertions.assertThrows(Exception.class,
-                () -> target.process("in", new Message(Map.of("test", "value"))));
+        Connection errorConnection = new Connection("err-conn");
+        target.getOutputPort("_error").connect(errorConnection);
+
+        Assertions.assertDoesNotThrow(() ->
+                target.process("in", new Message(Map.of("test", "value")))
+        );
+
+        Message errorMsg = errorConnection.poll();
+        Assertions.assertNotNull(errorMsg, "An error message should be sent to the error port.");
+        ErrorMessage errorMessage = assertInstanceOf(ErrorMessage.class, errorMsg, "The message should be an ErrorMessage.");
+        
+        Exception cause = errorMessage.getException();
+        RuntimeException runtimeException = assertInstanceOf(RuntimeException.class, cause, "The wrapper exception should be RuntimeException");
+        assertInstanceOf(IOException.class, runtimeException.getCause(), "The root cause should be IOException");
+        Assertions.assertEquals("Stream closed", runtimeException.getCause().getMessage());
     }
 }

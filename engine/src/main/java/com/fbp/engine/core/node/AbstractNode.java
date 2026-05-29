@@ -4,6 +4,7 @@ import com.fbp.engine.core.port.InputPort;
 import com.fbp.engine.core.port.OutputPort;
 import com.fbp.engine.core.port.impl.DefaultInputPort;
 import com.fbp.engine.core.port.impl.DefaultOutputPort;
+import com.fbp.engine.message.ErrorMessage;
 import com.fbp.engine.message.Message;
 import com.fbp.engine.metrics.MetricsCollector;
 import com.fbp.engine.node.exception.NotFoundPortNameException;
@@ -27,6 +28,8 @@ public abstract class AbstractNode implements Node {
         this.id = id;
         this.inputPorts = new HashMap<>();
         this.outputPorts  = new HashMap<>();
+        
+        addOutputPort("_error");
     }
 
     public void setFlowId(String flowId) {
@@ -104,7 +107,12 @@ public abstract class AbstractNode implements Node {
         } catch (Exception e) {
             log.error("[{}], error during processing on port '{}': {}", getId(), portName, e.getMessage(), e);
             success = false;
-            throw e;
+            
+            OutputPort errorPort = getOutputPort("_error");
+            if (errorPort != null && errorPort.isConnected()) {
+                ErrorMessage errorMsg = new ErrorMessage(message, e, getId());
+                send("_error", errorMsg);
+            }
         } finally {
             long endTime = System.currentTimeMillis();
             MetricsCollector.getInstance().recordProcessing(getFlowId(), getId(), endTime-startTime, success);

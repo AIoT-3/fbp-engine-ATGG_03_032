@@ -51,13 +51,13 @@ public class FlowManager {
                     nodeDefinition.getConfig());
             nodes.add(node);
         }
-        nodes.stream().forEach(node -> flow.addNode((AbstractNode) node));
+        nodes.forEach(node -> flow.addNode((AbstractNode) node));
 
         for(ConnectionDefinition connectionDefinition: flowDefinition.getConnections()){
             String[] splitFrom = connectionDefinition.getFrom().split(":");
             String[] splitTo = connectionDefinition.getTo().split(":");
 
-            flow.connect(splitFrom[0], splitFrom[1], splitTo[0], splitTo[1]);
+            flow.connect(splitFrom[0], splitFrom[1], splitTo[0], splitTo[1], connectionDefinition.getCapacity(), connectionDefinition.getBackpressure());
         }
 
         FlowEngine flowEngine = new FlowEngine();
