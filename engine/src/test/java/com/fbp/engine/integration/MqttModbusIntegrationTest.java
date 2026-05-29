@@ -3,6 +3,7 @@ package com.fbp.engine.integration;
 import ch.qos.logback.core.testUtil.RandomUtil;
 import com.fbp.engine.core.flow.Flow;
 import com.fbp.engine.core.engine.FlowEngine;
+import com.fbp.engine.core.node.AbstractNode;
 import com.fbp.engine.core.rule.RuleExpression;
 import com.fbp.engine.message.Message;
 import com.fbp.engine.node.external.ModbusWriterNode;
@@ -42,6 +43,8 @@ public class MqttModbusIntegrationTest {
 
     @BeforeEach
     void setUp() throws Exception {
+        AbstractNode.setGlobalDebugMode(true);
+
         mqttPort = RandomUtil.getRandomServerPort();
         Properties brokerProps = new Properties();
         brokerProps.setProperty("port", String.valueOf(mqttPort));
@@ -93,6 +96,8 @@ public class MqttModbusIntegrationTest {
 
     @AfterEach
     void tearDown() {
+        AbstractNode.setGlobalDebugMode(false);
+
         if (mqttBroker != null) {
             mqttBroker.stopServer();
         }

@@ -3,6 +3,7 @@ package com.fbp.engine.integration;
 import ch.qos.logback.core.testUtil.RandomUtil;
 import com.fbp.engine.core.flow.Flow;
 import com.fbp.engine.core.engine.FlowEngine;
+import com.fbp.engine.core.node.AbstractNode;
 import com.fbp.engine.message.Message;
 import com.fbp.engine.node.external.ModbusReaderNode;
 import com.fbp.engine.node.external.ModbusWriterNode;
@@ -15,6 +16,16 @@ import java.util.Map;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ModbusIntegrationTest {
+    @BeforeEach
+    void setup(){
+        AbstractNode.setGlobalDebugMode(true);
+    }
+
+    @AfterEach
+    void tearDown() {
+        AbstractNode.setGlobalDebugMode(false);
+    }
+
     @Order(1)
     @Test
     @DisplayName("Reader -> 레지스터 읽기")

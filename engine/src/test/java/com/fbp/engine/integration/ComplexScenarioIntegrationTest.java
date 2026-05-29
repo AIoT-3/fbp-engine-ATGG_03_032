@@ -83,10 +83,13 @@ class ComplexScenarioIntegrationTest {
         flowManager.getNodeRegistry().register("MqttIn", (id, config) -> new MqttInNode(id));
         flowManager.getNodeRegistry().register("Dummy", (id, config) -> new DummyNode(id, "out"));
         flowManager.getNodeRegistry().register("Sink", (id, config) -> new DummyNode(id, null));
+
+        AbstractNode.setGlobalDebugMode(true);
     }
 
     @AfterEach
     void tearDown() {
+        AbstractNode.setGlobalDebugMode(false);
         flowManager.reset();
     }
 

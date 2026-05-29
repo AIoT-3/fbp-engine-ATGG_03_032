@@ -1,6 +1,7 @@
 package com.fbp.engine.integration;
 
 import com.fbp.engine.core.flow.Flow;
+import com.fbp.engine.core.node.AbstractNode;
 import com.fbp.engine.message.Message;
 import com.fbp.engine.node.internal.CollectorNode;
 import com.fbp.engine.node.internal.TemperatureSensorNode;
@@ -25,6 +26,8 @@ public class TemperatureMonitoringIntegrationFlowTest {
 
     @BeforeEach
     void setUp() {
+        AbstractNode.setGlobalDebugMode(true);
+
         flow = new Flow("flow");
         trigger = new TimerNode("trigger", 50);
         temperatureSensorNode = new TemperatureSensorNode("temperature", 25, 40);
@@ -62,6 +65,8 @@ public class TemperatureMonitoringIntegrationFlowTest {
 
     @AfterEach
     void tearDown() {
+        AbstractNode.setGlobalDebugMode(false);
+
         flow.shutdown();
         executorService.shutdownNow();
     }

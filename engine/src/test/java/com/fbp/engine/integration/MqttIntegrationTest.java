@@ -3,6 +3,7 @@ package com.fbp.engine.integration;
 import ch.qos.logback.core.testUtil.RandomUtil;
 import com.fbp.engine.core.flow.Flow;
 import com.fbp.engine.core.engine.FlowEngine;
+import com.fbp.engine.core.node.AbstractNode;
 import com.fbp.engine.message.Message;
 import com.fbp.engine.node.external.MqttPublisherNode;
 import com.fbp.engine.node.external.MqttSubscriberNode;
@@ -18,13 +19,14 @@ import java.util.Properties;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MqttIntegrationTest {
-
     private Server broker;
     private int brokerPort;
     private Properties brokerProps;
 
     @BeforeEach
     void setUp() throws IOException {
+        AbstractNode.setGlobalDebugMode(true);
+
         brokerPort = RandomUtil.getRandomServerPort();
         String dataPath = "target/moquette_data_" + brokerPort;
 
@@ -41,6 +43,8 @@ public class MqttIntegrationTest {
 
     @AfterEach
     void tearDown() {
+        AbstractNode.setGlobalDebugMode(false);
+
         if (broker != null) {
             broker.stopServer();
         }

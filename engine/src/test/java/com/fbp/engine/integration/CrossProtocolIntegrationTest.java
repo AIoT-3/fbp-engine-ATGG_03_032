@@ -3,6 +3,7 @@ package com.fbp.engine.integration;
 import ch.qos.logback.core.testUtil.RandomUtil;
 import com.fbp.engine.core.flow.Flow;
 import com.fbp.engine.core.engine.FlowEngine;
+import com.fbp.engine.core.node.AbstractNode;
 import com.fbp.engine.core.rule.RuleExpression;
 import com.fbp.engine.message.Message;
 import com.fbp.engine.node.external.ModbusReaderNode;
@@ -28,6 +29,16 @@ import java.util.function.Predicate;
 @Slf4j
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class CrossProtocolIntegrationTest {
+    @BeforeEach
+    void setup(){
+        AbstractNode.setGlobalDebugMode(true);
+    }
+
+    @AfterEach
+    void tearDown() {
+        AbstractNode.setGlobalDebugMode(false);
+    }
+
     @Order(1)
     @Test
     @DisplayName("MQTT -> Rule -> MODBUS")

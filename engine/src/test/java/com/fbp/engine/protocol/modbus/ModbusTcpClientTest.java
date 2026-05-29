@@ -1,6 +1,7 @@
 package com.fbp.engine.protocol.modbus;
 
 import ch.qos.logback.core.testUtil.RandomUtil;
+import com.fbp.engine.core.node.AbstractNode;
 import com.fbp.engine.protocol.modbus.exception.ModbusException;
 import org.junit.jupiter.api.*;
 
@@ -26,6 +27,10 @@ public class ModbusTcpClientTest {
         simulator.setRegister(0, 250);
         simulator.setRegister(1, 600);
         simulator.setRegister(2, 1);
+    }
+    @AfterEach
+    void tearDown() {
+        simulator.stop();
     }
 
     @Order(1)

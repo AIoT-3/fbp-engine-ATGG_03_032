@@ -3,6 +3,7 @@ package com.fbp.engine.integration;
 import com.fbp.engine.core.flow.Flow;
 import com.fbp.engine.core.engine.FlowEngine;
 import com.fbp.engine.core.engine.State;
+import com.fbp.engine.core.node.AbstractNode;
 import com.fbp.engine.message.Message;
 import com.fbp.engine.node.internal.*;
 import org.junit.jupiter.api.*;
@@ -37,6 +38,8 @@ public class FinalTotalIntegrationTest {
 
     @BeforeEach
     void setUp(){
+        AbstractNode.setGlobalDebugMode(true);
+
         flowEngine = new FlowEngine();
         flow = new Flow("flow");
         timerNode = new TimerNode("trigger",100);
@@ -69,6 +72,11 @@ public class FinalTotalIntegrationTest {
                 .connect(thresholdFilterNode.getId(), "normal", normalCollector.getId(), "in");
 
         flowEngine.startFlow(flow.getId());
+    }
+
+    @AfterEach
+    void tearDown() {
+        AbstractNode.setGlobalDebugMode(false);
     }
 
     @Order(1)
