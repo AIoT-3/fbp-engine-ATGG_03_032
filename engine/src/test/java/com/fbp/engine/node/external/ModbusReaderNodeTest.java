@@ -9,6 +9,7 @@ import org.junit.jupiter.api.*;
 import java.net.InetAddress;
 import java.util.Map;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ModbusReaderNodeTest {
     ModbusReaderNode readerNode;
     ModbusTcpSimulator simulator;
@@ -35,6 +36,16 @@ public class ModbusReaderNodeTest {
                 )
         );
         readerNode = new ModbusReaderNode("reader", readerConfig);
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (readerNode != null) {
+            readerNode.shutdown();
+        }
+        if (simulator != null) {
+            simulator.stop();
+        }
     }
 
     @Order(1)
@@ -78,9 +89,6 @@ public class ModbusReaderNodeTest {
 
         Thread.sleep(300);
         Assertions.assertTrue(readerNode.isConnected());
-
-        readerNode.shutdown();
-        simulator.stop();
     }
 
     @Order(5)
@@ -105,9 +113,6 @@ public class ModbusReaderNodeTest {
                 ()->Assertions.assertTrue(poll.toString().contains("temperature")),
                 ()->Assertions.assertTrue(poll.toString().contains("38"))
         );
-
-        readerNode.shutdown();
-        simulator.stop();
     }
 
     @Order(6)
@@ -134,9 +139,6 @@ public class ModbusReaderNodeTest {
                 ()->Assertions.assertTrue(poll.toString().contains("humidity")),
                 ()->Assertions.assertTrue(poll.toString().contains("80"))
         );
-
-        readerNode.shutdown();
-        simulator.stop();
     }
 
     @Order(7)
@@ -174,18 +176,18 @@ public class ModbusReaderNodeTest {
         Assertions.assertAll(
                 ()->Assertions.assertNotNull(poll)
         );
-
-        readerNode2.shutdown();
-        simulator.stop();
     }
 
     @Order(8)
     @Test
     @DisplayName("shutdown 후 연결 해제")
-    void ifShutdownThenDisconnect(){
+    void ifShutdownThenDisconnect() throws InterruptedException {
         Assertions.assertFalse(readerNode.isConnected());
 
+        simulator.start();
         readerNode.initialize();
+        
+        Thread.sleep(300);
         Assertions.assertTrue(readerNode.isConnected());
 
         readerNode.shutdown();

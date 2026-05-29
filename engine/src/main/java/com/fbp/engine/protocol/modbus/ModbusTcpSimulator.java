@@ -23,20 +23,22 @@ public class ModbusTcpSimulator {
     private ServerSocket serverSocket;
     private int[] registers;
     private volatile boolean running;
+    private final int port;
 
     private ExecutorService executorService = Executors.newCachedThreadPool();
 
     public ModbusTcpSimulator(int port, int registerCount){
-        try {
-            this.serverSocket = new ServerSocket(port);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        this.port = port;
         this.registers = new int[registerCount];
         this.running = false;
     }
 
     public void start(){
+        try {
+            this.serverSocket = new ServerSocket(port);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         this.running = true;
         executorService.submit(this::acceptLoop);
     }
