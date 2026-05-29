@@ -32,6 +32,7 @@ public class Flow {
             throw new IllegalArgumentException("node must be notNull");
         }
 
+        node.setFlowId(id);
         nodes.put(node.getId(),node);
         return this;
     }

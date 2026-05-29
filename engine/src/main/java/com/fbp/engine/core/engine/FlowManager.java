@@ -16,20 +16,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 public class FlowManager {
-    private final NodeRegistry nodeRegistry;
+    private static final FlowManager FLOW_MANAGER = new FlowManager();
 
-    private final Map<String,FlowEngine> flowEngines = new ConcurrentHashMap<>();
+    private final NodeRegistry nodeRegistry = new NodeRegistry();
+    private final Map<String, FlowEngine> flowEngines = new ConcurrentHashMap<>();
 
-    public FlowManager() {
-        nodeRegistry = new NodeRegistry();
-    }
+    private FlowManager(){}
 
-    public FlowManager(NodeRegistry nodeRegistry){
-        if(nodeRegistry == null){
-            throw new IllegalArgumentException("nodeRegistry must be notNull");
-        }
-
-        this.nodeRegistry = nodeRegistry;
+    public static FlowManager getInstance(){
+        return FLOW_MANAGER;
     }
 
     public void deploy(FlowDefinition flowDefinition){
@@ -108,5 +103,19 @@ public class FlowManager {
             return;
         }
         throw new IllegalArgumentException("flowManager not contain flowId:" + flowId);
+    }
+
+    public NodeRegistry getNodeRegistry() {
+        return nodeRegistry;
+    }
+
+    public void reset() {
+        for (FlowEngine flowEngine : flowEngines.values()) {
+            flowEngine.shutdown();
+        }
+
+        flowEngines.clear();
+
+        nodeRegistry.clear();
     }
 }

@@ -5,6 +5,7 @@ import com.fbp.engine.core.port.OutputPort;
 import com.fbp.engine.core.port.impl.DefaultInputPort;
 import com.fbp.engine.core.port.impl.DefaultOutputPort;
 import com.fbp.engine.message.Message;
+import com.fbp.engine.metrics.MetricsCollector;
 import com.fbp.engine.node.exception.NotFoundPortNameException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,6 +18,8 @@ public abstract class AbstractNode implements Node {
     private final Map<String, InputPort> inputPorts;
     private final Map<String, OutputPort> outputPorts;
 
+    private String flowId;
+
     public AbstractNode(String id) {
         if(id == null || id.isBlank()){
             throw new IllegalArgumentException("id must be notBlank");
@@ -24,6 +27,14 @@ public abstract class AbstractNode implements Node {
         this.id = id;
         this.inputPorts = new HashMap<>();
         this.outputPorts  = new HashMap<>();
+    }
+
+    public void setFlowId(String flowId) {
+        this.flowId = flowId;
+    }
+
+    public String getFlowId() {
+        return flowId != null ? flowId : "UNKNOWN_FLOW";
     }
 
     @Override
@@ -82,13 +93,21 @@ public abstract class AbstractNode implements Node {
 
     @Override
     public void process(String portName, Message message) {
+        long startTime = System.currentTimeMillis();
+        boolean success = false;
         log.info("[{}], processing message...", getId());
+
         try {
             onProcess(portName, message);
             log.info("[{}], ...Processing message completed", getId());
+            success = true;
         } catch (Exception e) {
             log.error("[{}], error during processing on port '{}': {}", getId(), portName, e.getMessage(), e);
+            success = false;
             throw e;
+        } finally {
+            long endTime = System.currentTimeMillis();
+            MetricsCollector.getInstance().recordProcessing(getFlowId(), getId(), endTime-startTime, success);
         }
     }
 

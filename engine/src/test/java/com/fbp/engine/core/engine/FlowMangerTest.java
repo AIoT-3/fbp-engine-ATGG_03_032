@@ -18,7 +18,6 @@ import java.nio.charset.StandardCharsets;
 public class FlowMangerTest {
     FlowManager flowManager;
 
-
     String jsonString;
     InputStream inputStream;
     FlowParser flowParser;
@@ -64,11 +63,13 @@ public class FlowMangerTest {
                     ]
                 }
                 """;
+        flowManager = FlowManager.getInstance();
+
         inputStream = new ByteArrayInputStream(jsonString.getBytes(StandardCharsets.UTF_8));
         flowParser = new JsonFlowParser();
         flowDefinition = flowParser.parse(inputStream);
 
-        nodeRegistry = new NodeRegistry();
+        nodeRegistry = flowManager.getNodeRegistry();
 
         NodeFactory timerFactory = (id, config) -> {
             return new TimerNode(id, ((Number)config.get("intervalMs")).longValue());
@@ -89,8 +90,11 @@ public class FlowMangerTest {
             return new PrintNode(id);
         };
         nodeRegistry.register("Printer", printerFactory);
+    }
 
-        flowManager = new FlowManager(nodeRegistry);
+    @AfterEach
+    void tearDown() {
+        FlowManager.getInstance().reset();
     }
 
     @Order(1)
@@ -255,24 +259,24 @@ public class FlowMangerTest {
                         "type": "Collector"
                     },
                     {
-                        "id": "printer",
-                        "type": "Printer"
+                        "id": "what",
+                        "type": "What"
                     }
                     ],
                     "connections": [
                         {"from": "trigger:out", "to": "temperature-gener:trigger"},
                         {"from": "temperature-gener:out", "to": "collector:in"},
-                        {"from": "temperature-gener:out", "to": "printer:in"}
+                        {"from": "temperature-gener:out", "to": "what:in"}
                     ]
                 }
                 """;
+        flowManager = FlowManager.getInstance();
         inputStream = new ByteArrayInputStream(jsonString.getBytes(StandardCharsets.UTF_8));
         flowParser = new JsonFlowParser();
         flowDefinition = flowParser.parse(inputStream);
 
-        nodeRegistry = new NodeRegistry();
+        nodeRegistry = flowManager.getNodeRegistry();
 
-        flowManager = new FlowManager(nodeRegistry);
 
         Assertions.assertThrows(Exception.class, ()->{
            flowManager.deploy(flowDefinition);
