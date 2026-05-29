@@ -12,9 +12,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 public abstract class AbstractNode implements Node {
+    
+    private static final AtomicBoolean globalDebugMode = new AtomicBoolean(false);
+
     private final String id;
     private final Map<String, InputPort> inputPorts;
     private final Map<String, OutputPort> outputPorts;
@@ -30,6 +34,15 @@ public abstract class AbstractNode implements Node {
         this.outputPorts  = new HashMap<>();
         
         addOutputPort("_error");
+    }
+
+    public static void setGlobalDebugMode(boolean enabled) {
+        globalDebugMode.set(enabled);
+        log.warn("Global debug mode has been " + (enabled ? "ENABLED" : "DISABLED"));
+    }
+
+    public static boolean isGlobalDebugModeEnabled() {
+        return globalDebugMode.get();
     }
 
     public void setFlowId(String flowId) {
@@ -98,11 +111,13 @@ public abstract class AbstractNode implements Node {
     public void process(String portName, Message message) {
         long startTime = System.currentTimeMillis();
         boolean success = false;
-        log.info("[{}], processing message...", getId());
+
+        if (globalDebugMode.get()) {
+            log.info("[{}] processing message: {}", getId(), message);
+        }
 
         try {
             onProcess(portName, message);
-            log.info("[{}], ...Processing message completed", getId());
             success = true;
         } catch (Exception e) {
             log.error("[{}], error during processing on port '{}': {}", getId(), portName, e.getMessage(), e);

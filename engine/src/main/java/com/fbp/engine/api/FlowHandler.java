@@ -30,12 +30,15 @@ public class FlowHandler {
                     ApiResponse.notFound(exchange, "Not Found");
                 }
             } else if ("DELETE".equals(method)) {
-                if (path.startsWith("/flows/") && path.split("/").length == 3) {
-                    String flowId = path.split("/")[2];
-                    handleDeleteFlow(exchange, flowId);
-                } else {
-                    ApiResponse.notFound(exchange, "Not Found");
+                if (path.startsWith("/flows/")) {
+                    String[] parts = path.split("/");
+                    if (parts.length == 3) {
+                        String flowId = parts[2];
+                        handleDeleteFlow(exchange, flowId);
+                        return;
+                    }
                 }
+                ApiResponse.notFound(exchange, "Not Found");
             } else {
                 ApiResponse.methodNotAllowed(exchange);
             }

@@ -20,20 +20,19 @@ public class RouterHandler implements HttpHandler {
                 return;
             }
 
-            if (path.equals("/flows") || path.equals("/flows/")) {
+            if (path.startsWith("/flows/")) {
+                String[] parts = path.split("/");
+                if (parts.length == 4 && path.endsWith("/metrics")) {
+                    metricsHandler.handle(exchange);
+                    return;
+                }
                 flowHandler.handle(exchange);
                 return;
             }
 
-            if (path.startsWith("/flows/")) {
-                String[] parts = path.split("/");
-                if (parts.length == 3) {
-                    flowHandler.handle(exchange);
-                    return;
-                } else if (parts.length == 4 && path.endsWith("/metrics")) {
-                    metricsHandler.handle(exchange);
-                    return;
-                }
+            if (path.equals("/flows") || path.equals("/flows/")) {
+                flowHandler.handle(exchange);
+                return;
             }
 
             if (path.startsWith("/nodes/") && path.endsWith("/stats")) {
@@ -50,6 +49,7 @@ public class RouterHandler implements HttpHandler {
             try {
                 ApiResponse.internalServerError(exchange, "Internal Server Error: " + e.getMessage());
             } catch (IOException ioException) {
+                // Ignore
             }
         }
     }

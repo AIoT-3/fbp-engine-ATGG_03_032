@@ -130,6 +130,10 @@ public class Flow {
     public List<AbstractNode> getNodes(){
         return nodes.values().stream().toList();
     }
+    
+    public AbstractNode getNode(String nodeId) {
+        return nodes.get(nodeId);
+    }
 
     public List<Connection> getConnections(){
         return new ArrayList<>(connections);

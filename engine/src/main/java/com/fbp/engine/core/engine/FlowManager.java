@@ -20,6 +20,7 @@ public class FlowManager {
 
     private final NodeRegistry nodeRegistry = new NodeRegistry();
     private final Map<String, FlowEngine> flowEngines = new ConcurrentHashMap<>();
+    private final Map<String, Flow> flows = new ConcurrentHashMap<>();
 
     private FlowManager(){}
 
@@ -65,6 +66,7 @@ public class FlowManager {
         flowEngine.startFlow(flow.getId());
 
         flowEngines.put(flowDefinition.getId(), flowEngine);
+        flows.put(flow.getId(), flow);
     }
 
     public List<String> getDeployedFlowList(){
@@ -76,6 +78,14 @@ public class FlowManager {
             return flowEngines.get(flowId).getState();
         }
         throw new IllegalArgumentException("flowManager not contain flowId:" + flowId);
+    }
+    
+    public AbstractNode getNode(String flowId, String nodeId) {
+        Flow flow = flows.get(flowId);
+        if (flow != null) {
+            return flow.getNode(nodeId);
+        }
+        return null;
     }
 
     public void stop(String flowId){
@@ -100,6 +110,7 @@ public class FlowManager {
             flowEngine.shutdown();
 
             flowEngines.remove(flowId);
+            flows.remove(flowId);
             return;
         }
         throw new IllegalArgumentException("flowManager not contain flowId:" + flowId);
@@ -115,7 +126,7 @@ public class FlowManager {
         }
 
         flowEngines.clear();
-
+        flows.clear();
         nodeRegistry.clear();
     }
 }
